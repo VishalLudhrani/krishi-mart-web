@@ -1,0 +1,88 @@
+import React from 'react';
+import firebase from 'firebase';
+
+// declare and define a variable to store the authentication provider
+let provider = new firebase.auth.GoogleAuthProvider();
+
+class Login extends React.Component {
+  state = {
+    loggedInUser: '',
+    loginStyle: '',
+    logoutStyle: ''
+  }
+
+  componentDidMount() {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        // User is signed in.
+        // var userDisplayName = user.displayName;
+        console.log(user.displayName);
+        this.setState({loggedInUser: user.displayName});
+        // var email = user.email;
+        // var emailVerified = user.emailVerified;
+        // var photoURL = user.photoURL;
+        // var isAnonymous = user.isAnonymous;
+        // var uid = user.uid;
+        // var providerData = user.providerData;
+
+        // change the style for login element
+        this.setState({loginStyle: "display-none"});
+        this.setState({logoutStyle: "display-block content"});
+      } else {
+        this.setState({loginStyle: "display-block content"});
+        this.setState({logoutStyle: "display-none"});
+      }
+    });
+  }
+
+  render() {
+    return(
+      <div>
+        <div id="main-content" className={this.state.logoutStyle}>
+          {`Welcome ${this.state.loggedInUser}`}
+        </div>
+
+        <div id="login-func" className={this.state.loginStyle}>
+          <div className="welcome-prompt">
+            <h2>New here? Register..</h2>
+            <button className="btn">Register</button>
+          </div>
+          <div className="welcome-prompt">
+            <h2>Already a user?</h2>
+            <button id="consumer-login" onClick={this.consumerLogin} className="btn">Login</button>
+          </div>
+        </div>
+
+        <div className={this.state.logoutStyle}>
+            <button className="btn" onClick={this.consumerLogout}>Logout</button>
+          </div>
+      </div>
+    );
+  }
+
+  consumerLogin = () => {
+    // let the user sign in
+    firebase.auth().signInWithPopup(provider).then((result) => {
+      // This gives you a Google Access Token. You can use it to access the Google API.
+      var token = result.credential.accessToken;
+      this.setState({loggedInUser: result.user.displayName});
+      // The signed-in user info.
+      // ...
+    }).catch((error) => {
+      // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      // The email of the user's account used.
+      var email = error.email;
+      // The firebase.auth.AuthCredential type that was used.
+      var credential = error.credential;
+      // ...
+    });
+  }
+
+  consumerLogout = () => {
+    firebase.auth().signOut();
+  }
+}
+
+export default Login;
