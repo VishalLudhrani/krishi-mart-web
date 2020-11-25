@@ -15,15 +15,8 @@ class Login extends React.Component {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         // User is signed in.
-        // var userDisplayName = user.displayName;
         console.log(user.displayName);
         this.setState({loggedInUser: user.displayName});
-        // var email = user.email;
-        // var emailVerified = user.emailVerified;
-        // var photoURL = user.photoURL;
-        // var isAnonymous = user.isAnonymous;
-        // var uid = user.uid;
-        // var providerData = user.providerData;
 
         // change the style for login element
         this.setState({loginStyle: "display-none"});
@@ -77,6 +70,7 @@ class Login extends React.Component {
       // The firebase.auth.AuthCredential type that was used.
       var credential = error.credential;
       // ...
+      alert(`Error ${errorCode}: ${errorMessage}. Make sure ${email} is logged in via ${credential} properly!`)
     });
   }
 
