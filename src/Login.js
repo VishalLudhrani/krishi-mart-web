@@ -3,6 +3,7 @@ import firebase from 'firebase';
 
 // declare and define a variable to store the authentication provider
 let provider = new firebase.auth.GoogleAuthProvider();
+const firebaseFirestore = firebase.firestore();
 
 class Login extends React.Component {
   state = {
@@ -42,23 +43,28 @@ class Login extends React.Component {
           </div>
           <div className="welcome-prompt">
             <h2>Already a user?</h2>
-            <button id="consumer-login" onClick={this.consumerLogin} className="btn">Login</button>
+            <button id="consumer-login" onClick={this.userLogin} className="btn">Login</button>
           </div>
         </div>
 
         <div className={this.state.logoutStyle}>
-            <button className="btn" onClick={this.consumerLogout}>Logout</button>
+            <button className="btn" onClick={this.userLogout}>Logout</button>
           </div>
       </div>
     );
   }
 
-  consumerLogin = () => {
+  userLogin = () => {
     // let the user sign in
     firebase.auth().signInWithPopup(provider).then((result) => {
       // This gives you a Google Access Token. You can use it to access the Google API.
-      var token = result.credential.accessToken;
+      let token = result.credential.accessToken;
+      let userExists = false;
       this.setState({loggedInUser: result.user.displayName});
+      if(!(this.isRegistered(result.user, "consumer") || this.isRegistered(result.user, "farmer"))) {
+        console.log(`Dear ${result.user.displayName}, please register first.`);
+        this.userLogout();
+      }
       // The signed-in user info.
       // ...
     }).catch((error) => {
@@ -70,12 +76,23 @@ class Login extends React.Component {
       // The firebase.auth.AuthCredential type that was used.
       var credential = error.credential;
       // ...
-      alert(`Error ${errorCode}: ${errorMessage}. Make sure ${email} is logged in via ${credential} properly!`)
+      alert(`Error ${errorCode}: ${errorMessage}. Make sure user is logged in properly!`)
     });
   }
 
-  consumerLogout = () => {
+  userLogout = () => {
     firebase.auth().signOut();
+  }
+
+  isRegistered = (user, category) => {
+    firebaseFirestore.collection(`${category}`).get().then((snapshot) => {
+      snapshot.forEach((doc) => {
+        if(user.email in doc.data()) {
+          console.log("user exists");
+          return true;
+        }
+      });
+    });
   }
 }
 
