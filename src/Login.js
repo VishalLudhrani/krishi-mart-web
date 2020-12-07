@@ -2,8 +2,7 @@ import React from 'react';
 import firebase from 'firebase';
 
 // declare and define a variable to store the authentication provider
-let provider = new firebase.auth.GoogleAuthProvider();
-const firebaseFirestore = firebase.firestore();
+const provider = new firebase.auth.GoogleAuthProvider();
 
 class Login extends React.Component {
   state = {
@@ -22,7 +21,8 @@ class Login extends React.Component {
         // change the style for login element
         this.setState({loginStyle: "display-none"});
         this.setState({logoutStyle: "display-block content"});
-      } else {
+      } else { // user is signed out
+        // display the webpage for the user to register/login
         this.setState({loginStyle: "display-block content"});
         this.setState({logoutStyle: "display-none"});
       }
@@ -59,12 +59,12 @@ class Login extends React.Component {
     firebase.auth().signInWithPopup(provider).then((result) => {
       // This gives you a Google Access Token. You can use it to access the Google API.
       let token = result.credential.accessToken;
-      let userExists = false;
-      this.setState({loggedInUser: result.user.displayName});
-      if(!(this.isRegistered(result.user, "consumer") || this.isRegistered(result.user, "farmer"))) {
-        console.log(`Dear ${result.user.displayName}, please register first.`);
+      let userExists = this.isRegistered(result.user.email, "consumer") || this.isRegistered(result.user.email, "farmer");
+      if(!userExists) {
+        alert("Please register first");
         this.userLogout();
       }
+      this.setState({loggedInUser: result.user.displayName});
       // The signed-in user info.
       // ...
     }).catch((error) => {
@@ -84,12 +84,13 @@ class Login extends React.Component {
     firebase.auth().signOut();
   }
 
-  isRegistered = (user, category) => {
-    firebaseFirestore.collection(`${category}`).get().then((snapshot) => {
-      snapshot.forEach((doc) => {
-        if(user.email in doc.data()) {
-          console.log("user exists");
+  isRegistered = (testUserEmail, category) => {
+    this.props.firestore.collection(`${category}`).get().then((doc) => {
+      doc.forEach(element => {
+        if(element.data().email == testUserEmail) {
           return true;
+        } else {
+          return false;
         }
       });
     });
