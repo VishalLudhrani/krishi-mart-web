@@ -57,3 +57,7 @@ input[type="submit"] {
 .display-block {
   display: block;
 }
+
+.input {
+  padding: 4px 8px;
+}

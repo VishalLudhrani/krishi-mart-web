@@ -17,7 +17,6 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 firebase.analytics();
-const firebaseFirestore = firebase.firestore();
 
 let root = document.getElementById('root');
-ReactDOM.render(<App firestore={firebaseFirestore} />,root);
+ReactDOM.render(<App />,root);
