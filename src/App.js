@@ -1,9 +1,9 @@
 import React from 'react';
 import { BrowserRouter, Route, Link } from 'react-router-dom';
 import './App.css';
-import Login from './Login';
-import Home from './Home';
-import Register from './Register';
+import Login from './pages/Login';
+import Home from './pages/Home';
+import Register from './pages/Register';
 
 class App extends React.Component {
   render() {
