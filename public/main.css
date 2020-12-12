@@ -61,3 +61,11 @@ input[type="submit"] {
 .input {
   padding: 4px 8px;
 }
+
+.status-success {
+  color: green;
+}
+
+.status-fail {
+  color: red;
+}

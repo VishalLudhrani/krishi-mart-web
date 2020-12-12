@@ -4,6 +4,7 @@ import './App.css';
 import Login from './pages/Login';
 import Home from './pages/Home';
 import Register from './pages/Register';
+import EditUser from './pages/EditUser';
 
 class App extends React.Component {
   render() {
@@ -12,6 +13,7 @@ class App extends React.Component {
         <Route path="/" exact component={Home} />
         <Route path="/register" exact component={Register} />
         <Route path="/login" exact component={Login} />
+        <Route path="/update-profile" exact component={EditUser} />
       </BrowserRouter>
     );
   }
