@@ -1,14 +1,24 @@
 import React from 'react';
 import firebase from 'firebase';
+import { Link } from 'react-router-dom';
 
 class Login extends React.Component {
   state = {
     userEmail: '',
-    userPassword: ''
+    userPassword: '',
+    btnStyle: '',
+    loggedInUser: ''
   }
 
   componentDidMount() {
     document.title = "Login | Krishi Mart";
+    firebase.auth().onAuthStateChanged((user) => {
+      if(user) {
+        this.setState({loggedInUser: user.email, btnStyle: "btn display-block"});
+      } else {
+        this.setState({btnStyle: "btn display-none"})
+      }
+    });
   }
 
   render() {
@@ -29,6 +39,7 @@ class Login extends React.Component {
           <br />
           <input type="Submit" className="btn" onClick={this.userLogin} />
         </form>
+        <button className={this.state.btnStyle}><Link className="btn" to={'/home'}>Go Back</Link></button>
       </div>
     );
   }
