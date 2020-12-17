@@ -71,9 +71,9 @@ class EditUser extends React.Component {
             <div>
               <h1>Seems like you're logged out..</h1>
               <h3>Please Login if you're an existing user..</h3>
-              <button><Link className="btn" to={'/login'}>Login</Link></button>
+              <button className="btn"><Link className="btn" to={'/login'}>Login</Link></button>
               <h3>Please Register if you're a new user..</h3>
-              <button><Link className="btn" to={'/register'}>Register</Link></button>
+              <button className="btn"><Link className="btn" to={'/register'}>Register</Link></button>
             </div>
           )
         })

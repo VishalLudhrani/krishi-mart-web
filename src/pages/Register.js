@@ -1,28 +1,18 @@
 import React from 'react';
 import firebase from 'firebase';
-import { Link } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 
 class Register extends React.Component {
   state = {
     email: '',
     pwd: '',
     pwdVerify: '',
-    editUserStyle: '',
     regStatus: '',
     regStatusStyle: ''
   }
 
   componentDidMount() {
     document.title = "Register | Krishi Mart";
-
-    firebase.auth().onAuthStateChanged((user) => {
-      if(user) {
-        this.setState({editUserStyle: "btn display-block"});
-        console.log(user.email);
-      } else {
-        this.setState({editUserStyle: "btn display-none"});
-      }
-    });
   }
 
   render() {
@@ -49,7 +39,6 @@ class Register extends React.Component {
           <br />
           <br />
         </form>
-        <button className={this.state.editUserStyle}><Link className="btn" to={'/update-profile'}>{"Next >"}</Link></button>
       </div>
     );
   }
@@ -81,6 +70,7 @@ class Register extends React.Component {
         // Signed in 
         // set success message
         this.setState({regStatus: 'User Registered Successfully', regStatusStyle: 'status-success'});
+        this.props.history.push('/update-profile');
       })
       .catch((error) => {
         var errorCode = error.code;
@@ -91,4 +81,4 @@ class Register extends React.Component {
   }
 }
 
-export default Register;
+export default withRouter(Register);
