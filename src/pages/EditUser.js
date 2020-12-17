@@ -26,45 +26,41 @@ class EditUser extends React.Component {
           userName: user.displayName,
           uid: user.uid,
           userEmail: user.email,
+          editUserContent: (
+            <form onSubmit={this.handleSubmit}>
+              <label>Name: <br />
+                <input type="text" defaultValue='' onChange={this.handleNameChange} required />
+              </label>
+              <br />
+              <br />
+              <label>E-Mail: <br />
+                <input type="text" value={user.email} disabled />
+              </label>
+              <br />
+              <br />
+              <label>Phone: <br />
+                <input type="text" defaultValue='' onChange={this.handlePhNoChange} required />
+              </label>
+              <br />
+              <br />
+              <label>Choose category: <br />
+                <div onChange={this.handleCategoryChange}>
+                  <input type="radio" value="consumer" name="category" />Consumer
+                  &emsp;
+                  <input type="radio" value="farmer" name="category" />Farmer
+                </div>
+              </label>
+              <br />
+              <br />
+              <label>Address: <br />
+                <textarea rows="5" cols="50" defaultValue='' onChange={this.handleAddressChange} placeholder="M.K Road, New Delhi" required />
+              </label>
+              <br />
+              <br />
+              <input className="btn" type="submit" value="Submit" />
+            </form>
+          )
         });
-        if(user.displayName == null) {
-          this.setState({
-            editUserContent: (
-              <form onSubmit={this.handleSubmit}>
-                <label>Name: <br />
-                  <input type="text" value={this.state.userName} onChange={this.handleNameChange} required />
-                </label>
-                <br />
-                <br />
-                <label>E-Mail: <br />
-                  <input type="text" value={user.email} disabled />
-                </label>
-                <br />
-                <br />
-                <label>Phone: <br />
-                  <input type="text" defaultValue='' onChange={this.handlePhNoChange} required />
-                </label>
-                <br />
-                <br />
-                <label>Choose category: <br />
-                  <div onChange={this.handleCategoryChange}>
-                    <input type="radio" value="consumer" name="category" />Consumer
-                    &emsp;
-                    <input type="radio" value="farmer" name="category" />Farmer
-                  </div>
-                </label>
-                <br />
-                <br />
-                <label>Address: <br />
-                  <textarea rows="5" cols="50" defaultValue='' onChange={this.handleAddressChange} placeholder="M.K Road, New Delhi" required />
-                </label>
-                <br />
-                <br />
-                <input className="btn" type="submit" value="Submit" />
-              </form>
-            )
-          });
-        }
       } else {
         this.setState({
           editUserContent: (
