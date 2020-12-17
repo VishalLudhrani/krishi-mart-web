@@ -1,6 +1,6 @@
 import React from 'react';
 import firebase from 'firebase';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 
 class Login extends React.Component {
   state = {
@@ -14,9 +14,7 @@ class Login extends React.Component {
     document.title = "Login | Krishi Mart";
     firebase.auth().onAuthStateChanged((user) => {
       if(user) {
-        this.setState({loggedInUser: user.email, btnStyle: "btn display-block"});
-      } else {
-        this.setState({btnStyle: "btn display-none"})
+        this.setState({loggedInUser: user.email});
       }
     });
   }
@@ -39,7 +37,6 @@ class Login extends React.Component {
           <br />
           <input type="Submit" className="btn" onClick={this.userLogin} />
         </form>
-        <button className={this.state.btnStyle}><Link className="btn" to={'/home'}>Go Back</Link></button>
       </div>
     );
   }
@@ -51,6 +48,7 @@ class Login extends React.Component {
     firebase.auth().signInWithEmailAndPassword(email, password)
       .then((user) => {
         // Signed in 
+        this.props.history.push('/home');
       })
       .catch((error) => {
         var errorCode = error.code;
@@ -73,4 +71,4 @@ class Login extends React.Component {
 
 }
 
-export default Login;
+export default withRouter(Login);
