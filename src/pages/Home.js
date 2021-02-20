@@ -1,12 +1,14 @@
 import React from 'react';
 import firebase from 'firebase';
 import { Link } from 'react-router-dom';
+import ProductItem from './ProductItem';
 
 class Home extends React.Component {
   state = {
     loggedInUser: '',
     loginStyle: '',
-    logoutStyle: ''
+    logoutStyle: '',
+    products: []
   }
 
   componentDidMount() {
@@ -47,6 +49,20 @@ class Home extends React.Component {
           <div className={this.state.logoutStyle}>
             <button className="btn" onClick={this.userLogout}>Logout</button>
           </div>
+          
+          <div className={this.state.logoutStyle}>
+            <button className="btn" onClick={this.productSearch}>Search</button>
+          </div>
+
+          <div>
+            {
+              this.state.products.map((product, pos) => {
+                return(
+                  <ProductItem product={product} />
+                )
+              })
+            }
+          </div>
         </div>
       </div>
     );
@@ -54,6 +70,16 @@ class Home extends React.Component {
 
   userLogout = () => {
     firebase.auth().signOut();
+  }
+
+  productSearch = () => {
+    firebase.firestore().collection("product").where("price", ">=", 500).onSnapshot((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        let queryData = this.state.products.concat(doc);
+        this.setState({products: queryData});
+        console.log(this.state.products);
+      });
+    });
   }
 }
 

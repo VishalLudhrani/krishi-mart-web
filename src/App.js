@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Home from './pages/Home';
 import Register from './pages/Register';
 import EditUser from './pages/EditUser';
+import ProductDetails from './pages/ProductDetails';
 
 class App extends React.Component {
   render() {
@@ -15,6 +16,7 @@ class App extends React.Component {
         <Route path="/register" exact component={Register} />
         <Route path="/login" exact component={Login} />
         <Route path="/update-profile" exact component={EditUser} />
+        <Route path="/product/:id" exact component={ProductDetails} />
       </BrowserRouter>
     );
   }
