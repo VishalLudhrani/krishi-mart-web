@@ -26,7 +26,7 @@ class ProductDetails extends React.Component{
 
   render() {
     return(
-      <div className="content">
+      <div>
         <p><strong>Crop name: </strong>{this.state.crop}</p>
         <p><strong>Farmer name: </strong>{this.state.farmer}</p>
         <p><strong>Quantity: </strong>{this.state.quantity_kg} Kg</p>

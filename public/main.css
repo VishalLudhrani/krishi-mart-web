@@ -1,5 +1,36 @@
 body {
   font-family: 'Roboto', sans-serif;
+  background-color: #DCE1DE;
+}
+
+#bodyStyle {
+  background-color: #DCE1DE;
+  color: #1F2421;
+}
+
+.heroImg {
+  width: 100%;
+  height: auto;
+}
+
+.heroText {
+  font-size: 1.5rem;
+}
+
+.heroTitle {
+  font-size: 3rem;
+}
+
+.heroSection {
+  padding-top: 5%;
+}
+
+#highlight {
+  font-family: 'Quicksand', sans-serif;
+}
+
+#info {
+  font-family: 'Open Sans', sans-serif;
 }
 
 .content {
@@ -20,14 +51,39 @@ body {
   padding: 2% 0;
 }
 
-.btn {
+.customBtn {
   text-decoration: none;
   background: #49A078;
   color: #DCE1DE;
   padding: 14px 16px;
-  border-radius: 5px;
+  border-radius: 28px;
   cursor: pointer;
   border: 0;
+}
+
+.customBtnSecondary {
+  text-decoration: none;
+  background: none;
+  color: #49A078;
+  padding: 14px 16px;
+  border-radius: 28px;
+  cursor: pointer;
+  border: 2px solid #49A078;
+}
+
+.customBtnSecondaryx {
+  text-decoration: none;
+  background: none;
+  color: #49A078;
+  padding: 14px 16px;
+  border-radius: 28px;
+  cursor: pointer;
+  border: 0px;
+}
+
+.customBtn:hover {
+  text-decoration: none;
+  color: #DCE1DE;
 }
 
 .form {
