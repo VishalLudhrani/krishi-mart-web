@@ -57,7 +57,7 @@ class EditUser extends React.Component {
               </label>
               <br />
               <br />
-              <input className="btn" type="submit" value="Submit" />
+              <input className="customBtn" type="submit" value="Submit" />
             </form>
           )
         });
@@ -67,9 +67,9 @@ class EditUser extends React.Component {
             <div>
               <h1>Seems like you're logged out..</h1>
               <h3>Please Login if you're an existing user..</h3>
-              <button className="btn"><Link className="btn" to={'/login'}>Login</Link></button>
+              <button className="customBtn"><Link className="customBtn" to={'/login'}>Login</Link></button>
               <h3>Please Register if you're a new user..</h3>
-              <button className="btn"><Link className="btn" to={'/register'}>Register</Link></button>
+              <button className="customBtn"><Link className="customBtn" to={'/register'}>Register</Link></button>
             </div>
           )
         })

@@ -35,7 +35,7 @@ class Register extends React.Component {
           </label>
           <br />
           <br />
-          <input type="submit" className="btn" />
+          <input type="submit" className="customBtn" />
           <br />
           <br />
         </form>

@@ -35,7 +35,7 @@ class Login extends React.Component {
           </label>
           <br />
           <br />
-          <input type="Submit" className="btn" onClick={this.userLogin} />
+          <input type="Submit" className="customBtn" onClick={this.userLogin} />
         </form>
       </div>
     );

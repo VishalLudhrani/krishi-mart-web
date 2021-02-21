@@ -8,21 +8,23 @@ class Home extends React.Component {
     loggedInUser: '',
     loginStyle: '',
     logoutStyle: '',
-    products: []
+    products: [],
+    filterCriteria: "rating",
+    filterValue: 4
   }
 
   componentDidMount() {
+    document.title = "Home | Krishi Mart";
     firebase.auth().onAuthStateChanged((user) =>{
       if (user) {
         // User is signed in.
         this.setState({loggedInUser: user.displayName});
-
         // change the style for login element
         this.setState({loginStyle: "display-none"});
-        this.setState({logoutStyle: "display-block content"});
+        this.setState({logoutStyle: "display-block"});
       } else { // user is signed out
         // display the webpage for the user to register/login
-        this.setState({loginStyle: "display-block content"});
+        this.setState({loginStyle: "display-block row heroSection"});
         this.setState({logoutStyle: "display-none"});
       }
     });
@@ -31,53 +33,30 @@ class Home extends React.Component {
   render() {
     return(
       <div>
-        <div className="App">
-          <div id="main-content" className={this.state.logoutStyle}>
-            {`Welcome ${this.state.loggedInUser}`}
-          </div>
-          <div className={this.state.loginStyle}>
-            <div className="welcome-prompt">
-              <h2>New here? Register..</h2>
-              <button className="btn"><Link className="btn" to={'/register'}>Register</Link></button>
-            </div>
-            <div className="welcome-prompt">
-              <h2>Already a user?</h2>
-              <button id="consumer-login" className="btn"><Link className="btn" to={'/login'}>Login</Link></button>
+        <div className={this.state.loginStyle}>
+          <div className="col-lg-6">
+            <h3 id="highlight" className="heroTitle">Khet Se Ghar Tak</h3>
+            <div id="info">
+              <p className="heroText">Providing you fresh, and organic vegetables.. Straight from the farm!</p>
+              <button className="customBtn"><Link className="customBtn" to="/login">Login</Link></button>
+              <br />
+              <br />
+              <button className="customBtnSecondary"><Link className="customBtnSecondaryx" to="/register">Register</Link></button>
             </div>
           </div>
-
-          <div className={this.state.logoutStyle}>
-            <button className="btn" onClick={this.userLogout}>Logout</button>
-          </div>
-          
-          <div className={this.state.logoutStyle}>
-            <button className="btn" onClick={this.productSearch}>Search</button>
-          </div>
-
-          <div>
-            {
-              this.state.products.map((product, pos) => {
-                return(
-                  <ProductItem product={product} />
-                )
-              })
-            }
+          <div className="col-lg-6">
+            <img className="heroImg" src="./images/farmerlandingpage.svg" />
           </div>
         </div>
       </div>
     );
   }
 
-  userLogout = () => {
-    firebase.auth().signOut();
-  }
-
   productSearch = () => {
-    firebase.firestore().collection("product").where("price", ">=", 500).onSnapshot((querySnapshot) => {
+    firebase.firestore().collection("product").onSnapshot((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         let queryData = this.state.products.concat(doc);
         this.setState({products: queryData});
-        console.log(this.state.products);
       });
     });
   }
