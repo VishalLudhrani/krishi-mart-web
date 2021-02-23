@@ -17,29 +17,34 @@ class Register extends React.Component {
 
   render() {
     return(
-      <div className="content">
-      <h3 className={this.state.regStatusStyle}>{this.regStatus}</h3>
-        <form onSubmit={this.handleSubmit}>
-          <label>Enter your e-mail: <br />
-            <input type="email" placeholder="jondoe@example.com" onChange={this.onEmailChange} />
-          </label>
-          <br />
-          <br />
-          <label>Enter your password:<br />
-            <input type="password" onChange={this.onPwdChange} />
-          </label>
-          <br />
-          <br />
-          <label>Re-Enter your password:<br />
-            <input type="password" onChange={this.onPwdVerify} />
-          </label>
-          <br />
-          <br />
-          <input type="submit" className="customBtn" />
-          <br />
-          <br />
-        </form>
-      </div>
+     <div className="row heroSection">
+        <div className="col-sm-6 registerFormHero">
+          <h3 className={this.state.regStatusStyle}>{this.regStatus}</h3>
+          <form onSubmit={this.handleSubmit}>
+            <label>Enter your e-mail: <br />
+              <input type="email" placeholder="jondoe@example.com" onChange={this.onEmailChange} />
+            </label>
+            <br />
+            <br />
+            <label>Enter your password:<br />
+              <input type="password" onChange={this.onPwdChange} />
+            </label>
+            <br />
+            <br />
+            <label>Re-Enter your password:<br />
+              <input type="password" onChange={this.onPwdVerify} />
+            </label>
+            <br />
+            <br />
+            <input type="submit" className="customBtn" />
+            <br />
+            <br />
+          </form>
+        </div>
+        <div className="col-sm-6">
+          <img className="heroImg" src="./images/farmerregisterpage.svg" />
+        </div>
+     </div>
     );
   }
 
