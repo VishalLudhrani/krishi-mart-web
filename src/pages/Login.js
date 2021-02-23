@@ -21,22 +21,27 @@ class Login extends React.Component {
 
   render() {
     return(
-      <div className="content">
-        <form onSubmit={this.handleSubmit}>
-          <label>Enter your email:
+      <div className="row heroSection">
+        <div className="col-sm-6 loginFormHero">
+          <form onSubmit={this.handleSubmit}>
+            <label>Enter your email:
+              <br />
+              <input className="input" type="email" placeholder="jondoe@sample.com" value={this.state.userEmail} onChange={this.onEmailChange} />
+            </label>
             <br />
-            <input className="input" type="email" placeholder="jondoe@sample.com" value={this.state.userEmail} onChange={this.onEmailChange} />
-          </label>
-          <br />
-          <br />
-          <label>Enter your password:
             <br />
-            <input className="input" type="password" onChange={this.onPasswordChange} />
-          </label>
-          <br />
-          <br />
-          <input type="Submit" className="customBtn" onClick={this.userLogin} />
-        </form>
+            <label>Enter your password:
+              <br />
+              <input className="input" type="password" onChange={this.onPasswordChange} />
+            </label>
+            <br />
+            <br />
+            <input type="Submit" className="customBtn" onClick={this.userLogin} value="Login" />
+          </form>
+        </div>
+        <div className="col-sm-6">
+          <img className="heroImg" src="./images/farmerloginpage.svg" />
+        </div>
       </div>
     );
   }
