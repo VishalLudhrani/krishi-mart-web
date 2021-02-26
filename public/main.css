@@ -145,6 +145,15 @@ input[type="submit"] {
 }
 
 .productList {
-  padding-top: 2%;
-  border-bottom: 1px solid #1F2421;
+  display: inline;
+  padding: 2%;
+  margin-right: 2%;
+  background-color: #DCE1DE;
+  border-radius: 8px;
+  filter: drop-shadow(0px 5px 10px #A2BDAD);
+  float: left;
+}
+
+.productList:hover {
+  cursor: pointer;
 }
