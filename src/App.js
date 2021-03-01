@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Route } from 'react-router-dom';
+import { BrowserRouter, Route, Link } from 'react-router-dom';
 import './App.css';
 import firebase from 'firebase';
 import Login from './pages/Login';
@@ -33,30 +33,30 @@ class App extends React.Component {
   render() {
     return(
       <div className="container">
-        <div className="row">
-          <div className="navbar">
-            <div className="container-fluid">
-              <a className="navbar-brand"><img src="./images/logo.png" alt="Krishi Mart logo" width="64" height="64" /></a>
-              <form className="d-flex">
-                <div className="d-flex align-items-center">  
-                  <div id="google_translate_element">
-                    <a className="nav-link">Please select a language</a>
+        <BrowserRouter>
+          <div className="row">
+            <div className="navbar">
+              <div className="container-fluid">
+                <a className="navbar-brand cursor-pointer"><Link to="/home"><img src="./images/logo.png" alt="Krishi Mart logo" width="64" height="64" /></Link></a>
+                <form className="d-flex">
+                  <div className="d-flex align-items-center">  
+                    <div id="google_translate_element">
+                      <a className="nav-link">Please select a language</a>
+                    </div>
+                    <div className={this.state.userDisplay}>
+                      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">                    
+                        <i className="far fa-user"></i>
+                        <span> {this.state.userName}</span>
+                      </a>
+                      <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item" onClick={this.userLogout}>Logout</a></li>
+                      </ul>
+                    </div>
                   </div>
-                  <div className={this.state.userDisplay}>
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">                    
-                      <i className="far fa-user"></i>
-                      <span> {this.state.userName}</span>
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                      <li><a class="dropdown-item" onClick={this.userLogout}>Logout</a></li>
-                    </ul>
-                  </div>
-                </div>
-              </form>
+                </form>
+              </div>
             </div>
           </div>
-        </div>
-        <BrowserRouter>
           <Route path="/" exact component={Home} />
           <Route path="/home" exact component={Home} />
           <Route path="/register" exact component={Register} />
