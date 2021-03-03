@@ -11,9 +11,8 @@ class Home extends React.Component {
     products: [],
     filterCriteria: "rating",
     filterValue: 4,
-    queryNull: 'display-block row',
-    searchQuery: null,
-    nullMessage: null,
+    searchQuery: '',
+    searchProgress: '',
     isLoading: true
   }
 
@@ -22,12 +21,13 @@ class Home extends React.Component {
     firebase.auth().onAuthStateChanged((user) =>{
       if (user) {
         // User is signed in.
-        this.setState({loggedInUser: user.displayName,
-        // change the style for login element,
-        loginStyle: "display-none",
-        logoutStyle: "display-block row",
-        isLoading: false
-      });
+        this.setState({
+          loggedInUser: user.displayName,
+          // change the style for login element,
+          loginStyle: "display-none",
+          logoutStyle: "display-block row",
+          isLoading: false
+        });
       } else { // user is signed out
         // display the webpage for the user to register/login
         this.setState({
@@ -37,13 +37,30 @@ class Home extends React.Component {
         });
       }
     });
-    if(this.state.products.length === 0) {
-      this.setState({queryNull: 'display-block row'});
+    if(this.state.searchQuery) {
+      this.setState({
+        searchProgress: (
+          <div className="text-center">
+            <div className="spinner-border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+            <h3>Let us check the stockroom..</h3>
+          </div>
+        )
+      });
     } else {
-      this.setState({queryNull: 'display-none'});
-    }
-    if(!(this.state.searchQuery)) {
-      this.setState({nullMessage: 'Oops!<br />Nothing found..'});
+      this.setState({
+        searchProgress: (
+          <div className="row">
+            <div className="col-sm-3"></div>
+            <div className="col-sm-6">
+              <h3>Hey there!<br />What are you looking for..?<br />Please let us know via that search bar..</h3>
+              <img className="heroImg" src="./images/searchquerynull.svg" alt="Delivery boy here to deliver your order." />
+            </div>
+            <div className="col-sm-3"></div>
+          </div>
+        )
+      });      
     }
   }
 
@@ -73,23 +90,18 @@ class Home extends React.Component {
               </div>
             </div>
             <div className="col-sm-6">
-              <img className="heroImg" src="./images/farmerlandingpage.svg" />
+              <img className="heroImg" src="./images/farmerlandingpage.svg" alt="Farmer with a hen in his hand, smiling." />
             </div>
           </div>
           <div className={this.state.logoutStyle}>
-            <div class="input-group mb-3">
-              <input type="text" class="form-control" placeholder="Search for veggies.." aria-label="Search for veggies.." aria-describedby="button-addon2" onChange={this.onSearchQueryChange} value={this.state.searchQuery} />
-              <button class="btn btn-outline-secondary" type="button" id="button-addon2" onClick={this.productSearch}>Search</button>
+            <div id="info" className="input-group mb-3">
+              <input type="text" className="form-control" placeholder="Search for veggies.." aria-label="Search for veggies.." aria-describedby="button-addon2" onChange={this.onSearchQueryChange} value={this.state.searchQuery} />
+              <button className="btn btn-outline-secondary" type="button" id="button-addon2" onClick={this.productSearch}>Search</button>
             </div>
-            <div className={this.state.queryNull}>
-              <div className="col-md-3"></div>
-              <div className="col-md-6">
-                <h4 className="content">Oops!<br />No results found..</h4>
-                <img className="heroImg" src="./images/searchquerynull.svg" />
-              </div>
-              <div className="col-md-3"></div>
+            <div id="highlight" className="content container">
+              {this.state.searchProgress}
             </div>
-            <div>
+            <div id="info">
               {
                 this.state.products.map((product, pos) => {
                   return(
@@ -106,21 +118,43 @@ class Home extends React.Component {
   }
 
   productSearch = () => {
+    let resultKey = [];
     firebase.firestore().collection("product").onSnapshot((querySnapshot) => {
       querySnapshot.forEach((doc) => {
-        let queryData = this.state.products.concat(doc);
-        this.setState({products: queryData});
+        // collect all the data in a variable
+        resultKey = resultKey.concat(doc);
+        console.log(resultKey);
       });
+      // loop through the results to check for matching results
+      let queryData = []; // variable to store the matching results
+      for(let snap of resultKey) {
+        let snapData = snap.data().crop; // crop in existing database
+        if(snapData.includes(this.state.searchQuery)) {
+          // if the search keyword is a substring of the crop name in db, add it to the variable
+          queryData = this.state.products.concat(snap);
+        }
+      }
+      this.setState({products: queryData});
+      // if no results match, null is reflected in this.state.products; in the event of which, user is displayed with the error message 
+      if(!(this.state.products.length)) {
+        this.setState({
+          searchProgress: (
+            <div className="row">
+              <div className="col-sm-3"></div>
+              <div className="col-sm-6">
+                <h3>Oops!<br />Seems like we're out of stock with {this.state.searchQuery}..</h3>
+                <img className="heroImg" src="./images/searchquerynull.svg" alt="Delivery boy here to deliver your order." />
+              </div>
+              <div className="col-sm-3"></div>
+            </div>
+          )
+        })
+      }
     });
-    if(this.state.products.length === 0) {
-      this.setState({queryNull: 'display-none'});
-    } else {
-      this.setState({queryNull: 'display-block row'});
-    }
   }
 
   onSearchQueryChange = (event) => {
-    this.setState({searchQuery: event.target.value});
+    this.setState({searchQuery: event.target.value.toLowerCase()});
   }
 }
 

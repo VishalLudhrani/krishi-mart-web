@@ -37,19 +37,19 @@ class App extends React.Component {
           <div className="row">
             <div className="navbar">
               <div className="container-fluid">
-                <a className="navbar-brand cursor-pointer"><Link to="/home"><img src="./images/logo.png" alt="Krishi Mart logo" width="64" height="64" /></Link></a>
+                <Link to="/home" className="navbar-brand cursor-pointer"><img src="./images/logo.png" alt="Krishi Mart logo" width="64" height="64" /></Link>
                 <form className="d-flex">
                   <div className="d-flex align-items-center">  
                     <div id="google_translate_element">
-                      <a className="nav-link">Please select a language</a>
+                      <span className="nav-link cursor-pointer">Please select a language</span>
                     </div>
                     <div className={this.state.userDisplay}>
-                      <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">                    
+                      <span className="nav-link dropdown-toggle cursor-pointer" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">                    
                         <i className="far fa-user"></i>
                         <span> {this.state.userName}</span>
-                      </a>
-                      <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" onClick={this.userLogout}>Logout</a></li>
+                      </span>
+                      <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <li><span className="dropdown-item cursor-pointer" onClick={this.userLogout}>Logout</span></li>
                       </ul>
                     </div>
                   </div>
