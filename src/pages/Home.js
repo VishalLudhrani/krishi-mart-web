@@ -9,8 +9,6 @@ class Home extends React.Component {
     loginStyle: '',
     logoutStyle: '',
     products: [],
-    filterCriteria: "rating",
-    filterValue: 4,
     searchQuery: '',
     searchProgress: '',
     isLoading: true
@@ -128,7 +126,7 @@ class Home extends React.Component {
       // loop through the results to check for matching results
       let queryData = []; // variable to store the matching results
       for(let snap of resultKey) {
-        let snapData = snap.data().crop; // crop in existing database
+        let snapData = snap.data().crop.toLowerCase(); // crop in existing database
         if(snapData.includes(this.state.searchQuery)) {
           // if the search keyword is a substring of the crop name in db, add it to the variable
           queryData = this.state.products.concat(snap);
@@ -142,15 +140,30 @@ class Home extends React.Component {
             <div className="row">
               <div className="col-sm-3"></div>
               <div className="col-sm-6">
-                <h3>Oops!<br />Seems like we're out of stock with {this.state.searchQuery}..</h3>
-                <img className="heroImg" src="./images/searchquerynull.svg" alt="Delivery boy here to deliver your order." />
+                <h3>Oops!<br />Seems like we're out of stock with {this.state.searchQuery}..🥺</h3>
+                <img className="heroImg" src="./images/farmercropsnotfound.svg" alt="Delivery boy here to deliver your order." />
               </div>
               <div className="col-sm-3"></div>
             </div>
           )
         })
+      } else {
+        this.setState({searchProgress: ''})
       }
     });
+    // rotate the spinner until search results appear
+    if(!(this.state.products.length)) {
+      this.setState({
+        searchProgress: (
+          <div className="text-center">
+            <div className="spinner-border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+            <h3>Let us check the stockroom..</h3>
+          </div>
+        )
+      });
+    }
   }
 
   onSearchQueryChange = (event) => {
