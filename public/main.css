@@ -154,6 +154,10 @@ input[type="submit"] {
   float: left;
 }
 
-.productList:hover {
+.cursor-pointer:hover {
   cursor: pointer;
+}
+
+#product-details {
+  margin-top: 5%;
 }
