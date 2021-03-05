@@ -7,11 +7,15 @@ class Login extends React.Component {
     userEmail: '',
     userPassword: '',
     btnStyle: '',
-    loggedInUser: ''
+    loggedInUser: '',
+    heroContentStyle: 'col-sm-6 loginFormHero'
   }
 
   componentDidMount() {
     document.title = "Login | Krishi Mart";
+    var mql = window.matchMedia("screen and (max-width: 576px)");
+    this.formStyle(mql)
+    mql.addEventListener('change', this.formStyle);
     firebase.auth().onAuthStateChanged((user) => {
       if(user) {
         this.setState({loggedInUser: user.email});
@@ -22,7 +26,7 @@ class Login extends React.Component {
   render() {
     return(
       <div className="row heroSection">
-        <div className="col-sm-6 loginFormHero">
+        <div className={this.state.heroContentStyle}>
           <form onSubmit={this.handleSubmit}>
             <label>Enter your email:
               <br />
@@ -44,6 +48,20 @@ class Login extends React.Component {
         </div>
       </div>
     );
+  }
+
+  formStyle = (e) => {
+    if(e.matches){
+      this.setState({
+        heroContentStyle: 'col-sm-6 loginFormHero content'
+      });
+      console.log();
+    }
+    else{
+      this.setState({
+        heroContentStyle: 'col-sm-6 loginFormHero'
+      })
+    }
   }
 
   userLogin = () => {

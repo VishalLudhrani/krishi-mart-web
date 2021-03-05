@@ -11,11 +11,15 @@ class Home extends React.Component {
     products: [],
     searchQuery: '',
     searchProgress: '',
-    isLoading: true
+    isLoading: true,
+    heroContentStyle: 'col-sm-6'
   }
 
   componentDidMount() {
     document.title = "Home | Krishi Mart";
+    var mql = window.matchMedia("screen and (max-width: 576px)");
+    this.formStyle(mql)
+    mql.addEventListener('change', this.formStyle);
     firebase.auth().onAuthStateChanged((user) =>{
       if (user) {
         // User is signed in.
@@ -77,7 +81,7 @@ class Home extends React.Component {
       displayContent = (
         <div>
           <div className={this.state.loginStyle}>
-            <div className="col-sm-6">
+            <div className={this.state.heroContentStyle}>
               <h3 id="highlight" className="heroTitle">Khet Se Ghar Tak</h3>
               <div id="info">
                 <p className="heroText">Providing you fresh, and organic vegetables.. Straight from the farm!</p>
@@ -115,6 +119,20 @@ class Home extends React.Component {
       )
     }
     return displayContent;
+  }
+
+  formStyle = (e) => {
+    if(e.matches){
+      this.setState({
+        heroContentStyle: 'col-sm-6 content'
+      });
+      console.log();
+    }
+    else{
+      this.setState({
+        heroContentStyle: 'col-sm-6'
+      })
+    }
   }
 
   productSearch = () => {
