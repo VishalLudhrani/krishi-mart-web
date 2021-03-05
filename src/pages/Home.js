@@ -100,6 +100,8 @@ class Home extends React.Component {
               {this.state.searchProgress}
             </div>
             <div id="info">
+              <h3 id="highlight">Results for '{this.state.searchQuery}'</h3>
+              <br />
               {
                 this.state.products.map((product, pos) => {
                   return(
@@ -117,6 +119,10 @@ class Home extends React.Component {
 
   productSearch = () => {
     let resultKey = [];
+    let previousProductsData;
+    while(this.state.products.length) {
+      previousProductsData = this.state.products.pop();
+    }
     firebase.firestore().collection("product").onSnapshot((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         // collect all the data in a variable

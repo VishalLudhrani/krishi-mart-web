@@ -7,20 +7,31 @@ class Register extends React.Component {
     email: '',
     pwd: '',
     pwdVerify: '',
-    regStatus: '',
-    regStatusStyle: ''
+    regStatus: (
+      <p>Password must contain at least 8 characters: including at least one number, small letter, capital letter, and special character</p>
+    ),
+    regStatusStyle: 'display-block alert alert-info',
+    formStyle: '',
+    headerStyle: ''
   }
 
   componentDidMount() {
     document.title = "Register | Krishi Mart";
+    var mql = window.matchMedia("screen and (max-width: 576px)");
+    this.formStyle(mql)
+    mql.addEventListener('change', this.formStyle);
   }
 
   render() {
     return(
-     <div className="row heroSection">
-        <div className="col-sm-6 registerFormHero">
-          <h3 className={this.state.regStatusStyle}>{this.regStatus}</h3>
-          <form onSubmit={this.handleSubmit}>
+     <div className="row">
+        <div className="col-sm-6">
+          <h2 id="highlight" className={this.state.headerStyle}>Let's get you registered..</h2>
+          <br />
+          <div id="highlight" className={this.state.regStatusStyle}>
+            {this.state.regStatus}
+          </div>
+          <form className={this.state.formStyle} id="info" onSubmit={this.handleSubmit}>
             <label>Enter your e-mail: <br />
               <input type="email" placeholder="jondoe@example.com" onChange={this.onEmailChange} />
             </label>
@@ -36,7 +47,7 @@ class Register extends React.Component {
             </label>
             <br />
             <br />
-            <input type="submit" className="customBtn" />
+            <input type="submit" className="customBtn" value='Register' readOnly />
             <br />
             <br />
           </form>
@@ -60,13 +71,49 @@ class Register extends React.Component {
     this.setState({pwdVerify: event.target.value});
   }
 
-  handleSubmit = (event) => {
-    if(this.state.pwd === this.state.pwdVerify) {
-      this.registerUser();
-    } else {
-      this.setState({regStatus: 'Dear user, please verify your password.. \nYour passwords didn\'t match.'})
+  formStyle = (e) => {
+    if(e.matches){
+      this.setState({
+        formStyle: 'content',
+        regStatusStyle: 'display-block alert alert-info content',
+        headerStyle: 'heroTitle content'
+      });
+      console.log();
     }
+    else{
+      this.setState({
+        formStyle: '',
+        regStatusStyle: 'display-block alert alert-info',
+        headerStyle: 'heroTitle'
+      })
+    }
+  }
+
+  handleSubmit = (event) => {
     event.preventDefault();
+    let re = /^(?=.*\d)(?=.*[a-zA-Z])(?=.*[!#\$%&\?]).{8,}$/;
+    if(re.test(this.state.pwd)) {
+      if(this.state.pwd === this.state.pwdVerify) {
+        this.registerUser();
+        console.log('success');
+      } else {
+        console.log('fail');
+        this.setState({
+          regStatus: (
+            <h3>Dear user, please verify your password.. \nYour passwords didn't match.</h3>
+          ),
+          regStatusStyle: 'display-block alert alert-danger'
+        })
+      }
+    } else {
+      console.log('fail');
+      this.setState({
+        regStatus: (
+          <p><strong>Password Invalid!</strong><br />Password must contain at least 8 characters: including at least one number, small letter, capital letter, and special character</p>
+          ),
+        regStatusStyle: 'alert alert-danger display-block'
+      })
+    }
   }
 
   registerUser = () => {
@@ -74,14 +121,20 @@ class Register extends React.Component {
       .then((user) => {
         // Signed in 
         // set success message
-        this.setState({regStatus: 'User Registered Successfully', regStatusStyle: 'status-success'});
+        this.setState({
+          regStatus: (<h3>User Registered Successfully</h3>),
+          regStatusStyle: 'alert alert-success display-block'
+        });
         this.props.history.push('/update-profile');
       })
       .catch((error) => {
         var errorCode = error.code;
         var errorMessage = error.message;
         // ..
-        this.setState({regStatus: `Error: ${errorCode}\n${errorMessage}`, regStatusStyle: 'status-fail'});
+        this.setState({
+          regStatus: (<h3>Error: {errorCode}<br />{errorMessage}</h3>),
+          regStatusStyle: 'alert alert-danger display-block'
+        });
       });
   }
 }
