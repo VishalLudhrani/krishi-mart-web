@@ -91,7 +91,7 @@ class Register extends React.Component {
 
   handleSubmit = (event) => {
     event.preventDefault();
-    let re = /^(?=.*\d)(?=.*[a-zA-Z])(?=.*[!#\$%&\?]).{8,}$/;
+    let re = /^(?=.*\d)(?=.*[a-zA-Z])(?=.*[!#\$%&\?\@\^*]).{8,}$/;
     if(re.test(this.state.pwd)) {
       if(this.state.pwd === this.state.pwdVerify) {
         this.registerUser();

@@ -8,7 +8,10 @@ class Login extends React.Component {
     userPassword: '',
     btnStyle: '',
     loggedInUser: '',
-    heroContentStyle: 'col-sm-6 loginFormHero'
+    heroContentStyle: 'col-sm-6 loginFormHero',
+    headerStyle: '',
+    loginStatus: '',
+    loginStatusStyle: ''
   }
 
   componentDidMount() {
@@ -27,7 +30,15 @@ class Login extends React.Component {
     return(
       <div className="row heroSection">
         <div className={this.state.heroContentStyle}>
-          <form onSubmit={this.handleSubmit}>
+          <div id="highlight" className={this.state.headerStyle}>
+            <h2>Hi there, Welcome Back!</h2>
+            <h3>Login to continue.</h3>
+          </div>
+          <br />
+          <div id="highlight" className={this.state.loginStatusStyle}>
+            {this.state.loginStatus}
+          </div>
+          <form onSubmit={this.handleSubmit} id="info">
             <label>Enter your email:
               <br />
               <input className="input" type="email" placeholder="jondoe@sample.com" value={this.state.userEmail} onChange={this.onEmailChange} />
@@ -71,12 +82,25 @@ class Login extends React.Component {
     firebase.auth().signInWithEmailAndPassword(email, password)
       .then((user) => {
         // Signed in 
+        this.setState({
+          loginStatus: 'Logged in successfully!',
+          loginStatusStyle: 'alert alert-success'
+        });
         this.props.history.push('/home');
       })
       .catch((error) => {
         var errorCode = error.code;
         var errorMessage = error.message;
-        alert(`Error: ${errorCode} \n${errorMessage}`);
+        this.setState({
+          loginStatus: (
+            <p>
+              <strong>Error: {errorCode}</strong>
+              <br />
+              {errorMessage}
+            </p>
+            ),
+          loginStatusStyle: 'alert alert-danger'
+        });
       });
   }
 
