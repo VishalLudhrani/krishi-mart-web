@@ -7,11 +7,18 @@ class Login extends React.Component {
     userEmail: '',
     userPassword: '',
     btnStyle: '',
-    loggedInUser: ''
+    loggedInUser: '',
+    heroContentStyle: 'col-sm-6 loginFormHero',
+    headerStyle: '',
+    loginStatus: '',
+    loginStatusStyle: ''
   }
 
   componentDidMount() {
     document.title = "Login | Krishi Mart";
+    var mql = window.matchMedia("screen and (max-width: 576px)");
+    this.formStyle(mql)
+    mql.addEventListener('change', this.formStyle);
     firebase.auth().onAuthStateChanged((user) => {
       if(user) {
         this.setState({loggedInUser: user.email});
@@ -22,8 +29,16 @@ class Login extends React.Component {
   render() {
     return(
       <div className="row heroSection">
-        <div className="col-sm-6 loginFormHero">
-          <form onSubmit={this.handleSubmit}>
+        <div className={this.state.heroContentStyle}>
+          <div id="highlight" className={this.state.headerStyle}>
+            <h2>Hi there, Welcome Back!</h2>
+            <h3>Login to continue.</h3>
+          </div>
+          <br />
+          <div id="highlight" className={this.state.loginStatusStyle}>
+            {this.state.loginStatus}
+          </div>
+          <form onSubmit={this.handleSubmit} id="info">
             <label>Enter your email:
               <br />
               <input className="input" type="email" placeholder="jondoe@sample.com" value={this.state.userEmail} onChange={this.onEmailChange} />
@@ -46,6 +61,20 @@ class Login extends React.Component {
     );
   }
 
+  formStyle = (e) => {
+    if(e.matches){
+      this.setState({
+        heroContentStyle: 'col-sm-6 loginFormHero content'
+      });
+      console.log();
+    }
+    else{
+      this.setState({
+        heroContentStyle: 'col-sm-6 loginFormHero'
+      })
+    }
+  }
+
   userLogin = () => {
     // let the user sign in
     let email = this.state.userEmail;
@@ -53,12 +82,25 @@ class Login extends React.Component {
     firebase.auth().signInWithEmailAndPassword(email, password)
       .then((user) => {
         // Signed in 
+        this.setState({
+          loginStatus: 'Logged in successfully!',
+          loginStatusStyle: 'alert alert-success'
+        });
         this.props.history.push('/home');
       })
       .catch((error) => {
         var errorCode = error.code;
         var errorMessage = error.message;
-        alert(`Error: ${errorCode} \n${errorMessage}`);
+        this.setState({
+          loginStatus: (
+            <p>
+              <strong>Error: {errorCode}</strong>
+              <br />
+              {errorMessage}
+            </p>
+            ),
+          loginStatusStyle: 'alert alert-danger'
+        });
       });
   }
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import firebase from 'firebase';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 
 class EditUser extends React.Component {
   state = {
@@ -29,7 +29,7 @@ class EditUser extends React.Component {
           editUserContent: (
             <form onSubmit={this.handleSubmit}>
               <label>Name: <br />
-                <input type="text" defaultValue='' onChange={this.handleNameChange} required />
+                <input type="text" defaultValue={this.state.userName} onChange={this.handleNameChange} required />
               </label>
               <br />
               <br />
@@ -39,7 +39,7 @@ class EditUser extends React.Component {
               <br />
               <br />
               <label>Phone: <br />
-                <input type="text" defaultValue='' onChange={this.handlePhNoChange} required />
+                <input type="text" defaultValue={this.state.userPhNo} onChange={this.handlePhNoChange} required />
               </label>
               <br />
               <br />
@@ -53,7 +53,7 @@ class EditUser extends React.Component {
               <br />
               <br />
               <label>Address: <br />
-                <textarea rows="5" cols="50" defaultValue='' onChange={this.handleAddressChange} placeholder="M.K Road, New Delhi" required />
+                <textarea rows="5" cols="50" defaultValue={this.state.userAddress} onChange={this.handleAddressChange} placeholder="M.K Road, New Delhi" required />
               </label>
               <br />
               <br />
@@ -111,6 +111,7 @@ class EditUser extends React.Component {
       address: this.state.userAddress
     }).then(() => {
       alert("Profile updated successfully");
+      this.props.history.push('/home');
     }).catch((error) => {
       alert(`Error: ${error.code}\n${error.message}`);
     });
