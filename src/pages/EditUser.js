@@ -104,18 +104,22 @@ class EditUser extends React.Component {
 
   handleSubmit = (event) => {
     event.preventDefault();
-    firebase.firestore().collection(`${this.state.userCategory}`).doc(`${this.state.uid}`).set({
+    firebase.database().ref('user/' + this.state.userPhNo).set({
       name: this.state.userName,
       email: this.state.userEmail,
-      ph_no: this.state.userPhNo,
-      address: this.state.userAddress
-    }).then(() => {
-      alert("Profile updated successfully");
-      this.props.history.push('/home');
-    }).catch((error) => {
-      alert(`Error: ${error.code}\n${error.message}`);
-    });
+      address: this.state.userAddress,
+      phNo: this.state.userPhNo,
+      category: this.state.userCategory
+    }, (error) => {
+        if (error) {
+          alert("Sorry, we couldn't store your details..\nPlease try again")
+        } else {
+          alert("Profile updated successfully!");
+          this.props.history.push('/home');
+        }
+      }
+    )
   }
 }
 
-export default EditUser;
+export default withRouter(EditUser);

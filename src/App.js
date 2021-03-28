@@ -7,11 +7,12 @@ import Home from './pages/Home';
 import Register from './pages/Register';
 import EditUser from './pages/EditUser';
 import ProductDetails from './pages/ProductDetails';
+import UserProfile from './pages/UserProfile';
 
 class App extends React.Component {
 
   state = {
-    userName: null,
+    userName: '',
     userDisplay: "display-none"
   }
 
@@ -58,6 +59,7 @@ class App extends React.Component {
                                 <span> {this.state.userName}</span>
                               </span>
                               <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><span className="dropdown-item cursor-pointer"><Link to='/user-profile' style={{textDecoration: "none", color: "#1F2421"}}>My Profile</Link></span></li>
                                 <li><span className="dropdown-item cursor-pointer" onClick={this.userLogout}>Logout</span></li>
                               </ul>
                             </div>
@@ -76,6 +78,7 @@ class App extends React.Component {
           <Route path="/login" exact component={Login} />
           <Route path="/update-profile" exact component={EditUser} />
           <Route path="/product/:id" exact component={ProductDetails} />
+          <Route path="/user-profile" exact component={UserProfile} />
         </BrowserRouter>
       </div>
     );
