@@ -141,7 +141,7 @@ class Home extends React.Component {
     while(this.state.products.length) {
       previousProductsData = this.state.products.pop();
     }
-    firebase.firestore().collection("product").onSnapshot((querySnapshot) => {
+    firebase.database().ref('product/').on('value', (querySnapshot) => {
       querySnapshot.forEach((doc) => {
         // collect all the data in a variable
         resultKey = resultKey.concat(doc);
@@ -150,7 +150,7 @@ class Home extends React.Component {
       // loop through the results to check for matching results
       let queryData = []; // variable to store the matching results
       for(let snap of resultKey) {
-        let snapData = snap.data().crop.toLowerCase(); // crop in existing database
+        let snapData = snap.val().crop.toLowerCase(); // crop in existing database
         if(snapData.includes(this.state.searchQuery)) {
           // if the search keyword is a substring of the crop name in db, add it to the variable
           queryData = this.state.products.concat(snap);

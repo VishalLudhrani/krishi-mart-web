@@ -3,7 +3,7 @@ import { withRouter } from 'react-router-dom'
 
 class ProductItem extends React.Component {
   render() {
-    let product = this.props.product.data();
+    let product = this.props.product.val();
     return(
       <div onClick={this.onClick} className="productList cursor-pointer">
         <p><strong>Crop name: </strong>{product.crop}</p>
@@ -14,7 +14,7 @@ class ProductItem extends React.Component {
   }
 
   onClick = () => {
-    let id = this.props.product.id;
+    let id = this.props.product.key;
     this.props.history.push('/product/'+id);
   }
 }
