@@ -1,6 +1,6 @@
 import React from 'react';
 import firebase from 'firebase';
-import { withRouter } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 
 class Register extends React.Component {
   state = {
@@ -12,7 +12,15 @@ class Register extends React.Component {
     ),
     regStatusStyle: 'display-block alert alert-info',
     formStyle: '',
-    headerStyle: ''
+    headerStyle: '',
+    regBodyContent: (
+      <div className="text-center">
+        <div className="spinner-border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+        <h3 id="highlight">Please wait while we set it up for you..</h3>
+      </div>
+    )
   }
 
   componentDidMount() {
@@ -20,43 +28,61 @@ class Register extends React.Component {
     var mql = window.matchMedia("screen and (max-width: 576px)");
     this.formStyle(mql)
     mql.addEventListener('change', this.formStyle);
+
+    firebase.auth().onAuthStateChanged((user) => {
+      if(user) {
+        this.setState({
+          regBodyContent: (
+            <div id="highlight" className="content">
+              <h2>Dear {user.displayName}, you're already registered..</h2>
+              <p>Click <Link to='/home'>here</Link> to go back to home page</p>
+              <img src="./images/farmerlandingpage.svg" style={{width: '75%', height: 'auto'}} />
+            </div>
+          )
+        })
+      } else {
+        this.setState({
+          regBodyContent: (
+            <div className="row">
+              <div className="col-sm-6">
+                <h2 id="highlight" className={this.state.headerStyle}>Let's get you registered..</h2>
+                <br />
+                <div id="highlight" className={this.state.regStatusStyle}>
+                  {this.state.regStatus}
+                </div>
+                <form className={this.state.formStyle} id="info" onSubmit={this.handleSubmit}>
+                  <label>Enter your e-mail: <br />
+                    <input type="email" placeholder="jondoe@example.com" onChange={this.onEmailChange} />
+                  </label>
+                  <br />
+                  <br />
+                  <label>Enter your password:<br />
+                    <input type="password" onChange={this.onPwdChange} />
+                  </label>
+                  <br />
+                  <br />
+                  <label>Re-Enter your password:<br />
+                    <input type="password" onChange={this.onPwdVerify} />
+                  </label>
+                  <br />
+                  <br />
+                  <input type="submit" className="customBtn" value='Register' readOnly />
+                  <br />
+                  <br />
+                </form>
+              </div>
+              <div className="col-sm-6">
+                <img className="heroImg" src="./images/farmerregisterpage.svg" />
+              </div>
+            </div>
+          )
+        })
+      }
+    })
   }
 
   render() {
-    return(
-     <div className="row">
-        <div className="col-sm-6">
-          <h2 id="highlight" className={this.state.headerStyle}>Let's get you registered..</h2>
-          <br />
-          <div id="highlight" className={this.state.regStatusStyle}>
-            {this.state.regStatus}
-          </div>
-          <form className={this.state.formStyle} id="info" onSubmit={this.handleSubmit}>
-            <label>Enter your e-mail: <br />
-              <input type="email" placeholder="jondoe@example.com" onChange={this.onEmailChange} />
-            </label>
-            <br />
-            <br />
-            <label>Enter your password:<br />
-              <input type="password" onChange={this.onPwdChange} />
-            </label>
-            <br />
-            <br />
-            <label>Re-Enter your password:<br />
-              <input type="password" onChange={this.onPwdVerify} />
-            </label>
-            <br />
-            <br />
-            <input type="submit" className="customBtn" value='Register' readOnly />
-            <br />
-            <br />
-          </form>
-        </div>
-        <div className="col-sm-6">
-          <img className="heroImg" src="./images/farmerregisterpage.svg" />
-        </div>
-     </div>
-    );
+    return this.state.regBodyContent;
   }
 
   onPwdChange = (event) => {

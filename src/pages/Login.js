@@ -1,6 +1,6 @@
 import React from 'react';
 import firebase from 'firebase';
-import { Link, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 
 class Login extends React.Component {
   state = {
@@ -51,7 +51,7 @@ class Login extends React.Component {
             </label>
             <br />
             <br />
-            <input type="Submit" className="customBtn" onClick={this.userLogin} value="Login" />
+            <input type="Submit" className="customBtn" onClick={this.userLogin} value="Login" readOnly />
           </form>
         </div>
         <div className="col-sm-6">

@@ -171,6 +171,8 @@ class Home extends React.Component {
               </div>
             </div>
             <div className={this.state.logoutStyle}>
+              <button className="btn btn-outline-success" type="button" style={{width: '75%', margin: '10px auto'}}>Add Crop</button>
+              <br />
               <div id="highlight" className="content container">
                 {this.state.searchProgress}
               </div>
