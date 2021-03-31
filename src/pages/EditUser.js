@@ -53,7 +53,7 @@ class EditUser extends React.Component {
               <br />
               <br />
               <label>Address: <br />
-                <textarea rows="5" cols="50" defaultValue={this.state.userAddress} onChange={this.handleAddressChange} placeholder="M.K Road, New Delhi" required />
+                <textarea style={{width: '100%', height: 'auto'}} defaultValue={this.state.userAddress} onChange={this.handleAddressChange} placeholder="M.K Road, New Delhi" required />
               </label>
               <br />
               <br />
