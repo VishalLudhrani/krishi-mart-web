@@ -13,7 +13,8 @@ class Home extends React.Component {
     searchQuery: '',
     searchProgress: '',
     isLoading: true,
-    heroContentStyle: 'col-sm-6'
+    heroContentStyle: 'col-sm-6',
+    cropsContent: ''
   }
 
   componentDidMount() {
@@ -38,7 +39,7 @@ class Home extends React.Component {
             userdb = userdb.concat(doc.val());
           })
           for(let u of userdb) {
-            if(u.category === 'farmer') {
+            if(u.category === 'farmer' && u.email === user.email) {
               this.setState({
                 loggedInUserCategory: 'farmer'
               });
@@ -85,18 +86,56 @@ class Home extends React.Component {
         });      
       }
     } else {
-      this.setState({
-        searchProgress: (
-          <div className="row">
-            <div className="col-sm-3"></div>
-            <div className="col-sm-6">
-              <h3>Welcome back to Krishi Mart!<br />Your products appear here!</h3>
-              <img style={{width: '75%', height: 'auto'}} src="./images/farmer-crop-upload.svg" alt="Delivery boy here to deliver your order." />
-            </div>
-            <div className="col-sm-3"></div>
-          </div>
-        )
-      });  
+      let cropdb = [];
+      let userEmail = '';
+      let userCrops = [];
+      firebase.database().ref('product').on('value', (snapshot) => {
+        snapshot.forEach((doc) => {
+          cropdb = cropdb.concat(doc.val());
+        });
+        firebase.auth().onAuthStateChanged((user) => {
+          if(user) {
+            userEmail = user.email;
+            for(let crop of cropdb) {
+              if(userEmail === crop.farmerEmail) {
+                userCrops = userCrops.concat(crop);
+              }
+            }
+          }
+          if(userCrops.length) {
+            this.setState({
+              cropsContent: (
+                <div id="info">
+                  {
+                    userCrops.map((product, pos) => {
+                      return(
+                        <div className="productList cursor-pointer">
+                          <p><strong>Crop name: </strong>{product.crop}</p>
+                          <p><strong>Quantity: </strong>{product.quantity_kg} Kg</p>
+                          <p><strong>Price: </strong>Rs. {product.price}</p>
+                        </div>
+                      )
+                    })
+                  }
+                </div>
+              )
+            })
+          } else {
+            this.setState({
+              cropsContent: (
+                <div className="row">
+                  <div className="col-sm-3"></div>
+                  <div className="col-sm-6">
+                    <h3>Welcome back to Krishi Mart!<br />Your products appear here!</h3>
+                    <img style={{width: '75%', height: 'auto'}} src="./images/farmer-crop-upload.svg" alt="Delivery boy here to deliver your order." />
+                  </div>
+                  <div className="col-sm-3"></div>
+                </div>
+              )
+            }); 
+          }
+        });
+      });
     }
   }
 
@@ -133,14 +172,14 @@ class Home extends React.Component {
             <div className={this.state.logoutStyle}>
               <div id="info" className="input-group mb-3">
                 <input type="text" className="form-control" placeholder="Search for veggies.." aria-label="Search for veggies.." aria-describedby="button-addon2" onChange={this.onSearchQueryChange} value={this.state.searchQuery} />
-                <button className="btn btn-outline-secondary" type="button" id="button-addon2" onClick={this.productSearch}>Search</button>
-              </div>
-              <div id="highlight" className="content container">
-                {this.state.searchProgress}
+                <button className="btn btn-outline-success" type="button" id="button-addon2" onClick={this.productSearch}>Search</button>
               </div>
               <div id="info">
                 <h3 id="highlight">Results for '{this.state.searchQuery}'</h3>
                 <br />
+                <div id="highlight" className="content container">
+                  {this.state.searchProgress}
+                </div>
                 {
                   this.state.products.map((product, pos) => {
                     return(
@@ -174,7 +213,7 @@ class Home extends React.Component {
               <button className="btn btn-outline-success" type="button" style={{width: '75%', margin: '10px auto'}}>Add Crop</button>
               <br />
               <div id="highlight" className="content container">
-                {this.state.searchProgress}
+                {this.state.cropsContent}
               </div>
             </div>
           </div>
@@ -204,51 +243,57 @@ class Home extends React.Component {
     while(this.state.products.length) {
       previousProductsData = this.state.products.pop();
     }
-    firebase.database().ref('product/').on('value', (querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        // collect all the data in a variable
-        resultKey = resultKey.concat(doc);
-      });
-      // loop through the results to check for matching results
-      let queryData = []; // variable to store the matching results
-      for(let snap of resultKey) {
-        let snapData = snap.val().crop.toLowerCase(); // crop in existing database
-        if(snapData.includes(this.state.searchQuery)) {
-          // if the search keyword is a substring of the crop name in db, add it to the variable
-          queryData = this.state.products.concat(snap);
+    if(this.state.searchQuery) {
+      firebase.database().ref('product/').on('value', (querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          // collect all the data in a variable
+          resultKey = resultKey.concat(doc);
+        });
+        // loop through the results to check for matching results
+        let queryData = []; // variable to store the matching results
+        for(let snap of resultKey) {
+          let snapData = snap.val().crop.toLowerCase(); // crop in existing database
+          if(snapData.includes(this.state.searchQuery)) {
+            // if the search keyword is a substring of the crop name in db, add it to the variable
+            queryData = this.state.products.concat(snap);
+          }
         }
-      }
-      this.setState({products: queryData});
-      // if no results match, null is reflected in this.state.products; in the event of which, user is displayed with the error message 
-      if(!(this.state.products.length)) {
+        this.setState({products: queryData});
+        // if no results match, null is reflected in this.state.products; in the event of which, user is displayed with the error message 
+        if(queryData.length) {
+          this.setState({searchProgress: ''});
+        } else {
+          this.setState({
+            searchProgress: (
+              <div className="row">
+                <div className="col-sm-3"></div>
+                <div className="col-sm-6">
+                  <h3>Oops!<br />Seems like we're out of stock with {this.state.searchQuery}..🥺</h3>
+                  <img className="heroImg" src="./images/farmercropsnotfound.svg" alt="Delivery boy here to deliver your order." />
+                </div>
+                <div className="col-sm-3"></div>
+              </div>
+            )
+          })
+        }
+      });
+      // rotate the spinner until search results appear
+      if(!(this.state.products.length) && !(this.state.searchQuery)) {
         this.setState({
           searchProgress: (
-            <div className="row">
-              <div className="col-sm-3"></div>
-              <div className="col-sm-6">
-                <h3>Oops!<br />Seems like we're out of stock with {this.state.searchQuery}..🥺</h3>
-                <img className="heroImg" src="./images/farmercropsnotfound.svg" alt="Delivery boy here to deliver your order." />
+            <div className="text-center">
+              <div className="spinner-border" role="status">
+                <span className="visually-hidden">Loading...</span>
               </div>
-              <div className="col-sm-3"></div>
+              <h3>Let us check the stockroom..</h3>
             </div>
           )
-        })
-      } else {
-        this.setState({searchProgress: ''})
+        });
       }
-    });
-    // rotate the spinner until search results appear
-    if(!(this.state.products.length)) {
+    } else {
       this.setState({
-        searchProgress: (
-          <div className="text-center">
-            <div className="spinner-border" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-            <h3>Let us check the stockroom..</h3>
-          </div>
-        )
-      });
+        searchProgress: 'Please provide an input first..'
+      })
     }
   }
 
