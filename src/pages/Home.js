@@ -14,7 +14,14 @@ class Home extends React.Component {
     searchProgress: '',
     isLoading: true,
     heroContentStyle: 'col-sm-6',
-    cropsContent: ''
+    cropsContent: (
+      <div className="text-center">
+        <div className="spinner-border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+        <h3>Checking your warehouse..</h3>
+      </div>
+    )
   }
 
   componentDidMount() {
@@ -22,6 +29,8 @@ class Home extends React.Component {
     var mql = window.matchMedia("screen and (max-width: 576px)");
     this.formStyle(mql)
     mql.addEventListener('change', this.formStyle);
+
+    // check the user, and set the content to be rendered accordingly
     firebase.auth().onAuthStateChanged((user) =>{
       if (user) {
         // User is signed in.
@@ -63,7 +72,9 @@ class Home extends React.Component {
         });
       }
     });
+
     if(this.state.loggedInUserCategory === 'consumer') {
+      console.log('consumer');
       // logged in user is a consumer
       if(this.state.searchQuery) {
         // loading state
@@ -261,7 +272,7 @@ class Home extends React.Component {
           let snapData = snap.val().crop.toLowerCase(); // crop in existing database
           if(snapData.includes(this.state.searchQuery)) {
             // if the search keyword is a substring of the crop name in db, add it to the variable
-            queryData = this.state.products.concat(snap);
+            queryData = queryData.concat(snap);
           }
         }
         this.setState({products: queryData});
