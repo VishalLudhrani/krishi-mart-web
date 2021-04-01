@@ -8,6 +8,7 @@ import Register from './pages/Register';
 import EditUser from './pages/EditUser';
 import ProductDetails from './pages/ProductDetails';
 import UserProfile from './pages/UserProfile';
+import AddCrop from './pages/AddCrop'
 
 class App extends React.Component {
 
@@ -79,6 +80,7 @@ class App extends React.Component {
           <Route path="/update-profile" exact component={EditUser} />
           <Route path="/product/:id" exact component={ProductDetails} />
           <Route path="/user-profile" exact component={UserProfile} />
+          <Route path="/add-crop" exact component={AddCrop} />
         </BrowserRouter>
       </div>
     );

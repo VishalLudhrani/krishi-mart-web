@@ -14,7 +14,14 @@ class Home extends React.Component {
     searchProgress: '',
     isLoading: true,
     heroContentStyle: 'col-sm-6',
-    cropsContent: ''
+    cropsContent: (
+      <div className="text-center">
+        <div className="spinner-border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+        <h3>Checking your warehouse..</h3>
+      </div>
+    )
   }
 
   componentDidMount() {
@@ -22,6 +29,8 @@ class Home extends React.Component {
     var mql = window.matchMedia("screen and (max-width: 576px)");
     this.formStyle(mql)
     mql.addEventListener('change', this.formStyle);
+
+    // check the user, and set the content to be rendered accordingly
     firebase.auth().onAuthStateChanged((user) =>{
       if (user) {
         // User is signed in.
@@ -38,15 +47,19 @@ class Home extends React.Component {
           snapshot.forEach((doc) => {
             userdb = userdb.concat(doc.val());
           })
+          // check for user category, so that home page is rendered accordingly
           for(let u of userdb) {
             if(u.category === 'farmer' && u.email === user.email) {
               this.setState({
                 loggedInUserCategory: 'farmer'
               });
-            } else {
+              break;
+            }
+            if(u.category === 'consumer' && u.email === user.email) {
               this.setState({
                 loggedInUserCategory: 'consumer'
               });
+              break;
             }
           }
         });
@@ -59,8 +72,12 @@ class Home extends React.Component {
         });
       }
     });
+
     if(this.state.loggedInUserCategory === 'consumer') {
+      console.log('consumer');
+      // logged in user is a consumer
       if(this.state.searchQuery) {
+        // loading state
         this.setState({
           searchProgress: (
             <div className="text-center">
@@ -72,6 +89,7 @@ class Home extends React.Component {
           )
         });
       } else {
+        // idle state
         this.setState({
           searchProgress: (
             <div className="row">
@@ -86,18 +104,20 @@ class Home extends React.Component {
         });      
       }
     } else {
+      // logged in user is farmer
       let cropdb = [];
       let userEmail = '';
       let userCrops = [];
+      // get the crops that belong to logged in farmer
       firebase.database().ref('product').on('value', (snapshot) => {
         snapshot.forEach((doc) => {
-          cropdb = cropdb.concat(doc.val());
+          cropdb = cropdb.concat(doc);
         });
         firebase.auth().onAuthStateChanged((user) => {
           if(user) {
             userEmail = user.email;
             for(let crop of cropdb) {
-              if(userEmail === crop.farmerEmail) {
+              if(userEmail === crop.val().farmerEmail) {
                 userCrops = userCrops.concat(crop);
               }
             }
@@ -106,14 +126,11 @@ class Home extends React.Component {
             this.setState({
               cropsContent: (
                 <div id="info">
+                  <h2>Your Crops:</h2>
                   {
                     userCrops.map((product, pos) => {
                       return(
-                        <div className="productList cursor-pointer">
-                          <p><strong>Crop name: </strong>{product.crop}</p>
-                          <p><strong>Quantity: </strong>{product.quantity_kg} Kg</p>
-                          <p><strong>Price: </strong>Rs. {product.price}</p>
-                        </div>
+                        <ProductItem product={product} key={pos} />
                       )
                     })
                   }
@@ -210,9 +227,9 @@ class Home extends React.Component {
               </div>
             </div>
             <div className={this.state.logoutStyle}>
-              <button className="btn btn-outline-success" type="button" style={{width: '75%', margin: '10px auto'}}>Add Crop</button>
+              <button className="btn btn-outline-success" type="button" style={{width: '75%', margin: '10px auto'}}><Link to="/add-crop" style={{textDecoration: 'none', color: '#49A078'}}>Add Crop</Link></button>
               <br />
-              <div id="highlight" className="content container">
+              <div id="highlight" className="container">
                 {this.state.cropsContent}
               </div>
             </div>
@@ -255,7 +272,7 @@ class Home extends React.Component {
           let snapData = snap.val().crop.toLowerCase(); // crop in existing database
           if(snapData.includes(this.state.searchQuery)) {
             // if the search keyword is a substring of the crop name in db, add it to the variable
-            queryData = this.state.products.concat(snap);
+            queryData = queryData.concat(snap);
           }
         }
         this.setState({products: queryData});
