@@ -53,12 +53,89 @@ class Home extends React.Component {
               this.setState({
                 loggedInUserCategory: 'farmer'
               });
+              // logged in user is farmer
+              let cropdb = [];
+              let userEmail = '';
+              let userCrops = [];
+              // get the crops that belong to logged in farmer
+              firebase.database().ref('product').on('value', (snapshot) => {
+                snapshot.forEach((doc) => {
+                  cropdb = cropdb.concat(doc);
+                });
+                firebase.auth().onAuthStateChanged((user) => {
+                  if(user) {
+                    userEmail = user.email;
+                    for(let crop of cropdb) {
+                      if(userEmail === crop.val().farmerEmail) {
+                        userCrops = userCrops.concat(crop);
+                      }
+                    }
+                  }
+                  if(userCrops.length) {
+                    this.setState({
+                      cropsContent: (
+                        <div id="info">
+                          <h2>Your Crops:</h2>
+                          {
+                            userCrops.map((product, pos) => {
+                              return(
+                                <ProductItem product={product} key={pos} />
+                              )
+                            })
+                          }
+                        </div>
+                      )
+                    })
+                  } else {
+                    this.setState({
+                      cropsContent: (
+                        <div className="row">
+                          <div className="col-sm-3"></div>
+                          <div className="col-sm-6">
+                            <h3>Welcome back to Krishi Mart!<br />Your products appear here!</h3>
+                            <img style={{width: '75%', height: 'auto'}} src="./images/farmer-crop-upload.svg" alt="Delivery boy here to deliver your order." />
+                          </div>
+                          <div className="col-sm-3"></div>
+                        </div>
+                      )
+                    }); 
+                  }
+                });
+              });
               break;
             }
             if(u.category === 'consumer' && u.email === user.email) {
               this.setState({
                 loggedInUserCategory: 'consumer'
               });
+              // logged in user is a consumer
+              if(this.state.searchQuery) {
+                // loading state
+                this.setState({
+                  searchProgress: (
+                    <div className="text-center">
+                      <div className="spinner-border" role="status">
+                        <span className="visually-hidden">Loading...</span>
+                      </div>
+                      <h3>Let us check the stockroom..</h3>
+                    </div>
+                  )
+                });
+              } else {
+                // idle state
+                this.setState({
+                  searchProgress: (
+                    <div className="row">
+                      <div className="col-sm-3"></div>
+                      <div className="col-sm-6">
+                        <h3>Hey there!<br />What are you looking for..?<br />Please let us know via that search bar..</h3>
+                        <img className="heroImg" src="./images/searchquerynull.svg" alt="Delivery boy here to deliver your order." />
+                      </div>
+                      <div className="col-sm-3"></div>
+                    </div>
+                  )
+                });      
+              }
               break;
             }
           }
@@ -72,88 +149,6 @@ class Home extends React.Component {
         });
       }
     });
-
-    if(this.state.loggedInUserCategory === 'consumer') {
-      console.log('consumer');
-      // logged in user is a consumer
-      if(this.state.searchQuery) {
-        // loading state
-        this.setState({
-          searchProgress: (
-            <div className="text-center">
-              <div className="spinner-border" role="status">
-                <span className="visually-hidden">Loading...</span>
-              </div>
-              <h3>Let us check the stockroom..</h3>
-            </div>
-          )
-        });
-      } else {
-        // idle state
-        this.setState({
-          searchProgress: (
-            <div className="row">
-              <div className="col-sm-3"></div>
-              <div className="col-sm-6">
-                <h3>Hey there!<br />What are you looking for..?<br />Please let us know via that search bar..</h3>
-                <img className="heroImg" src="./images/searchquerynull.svg" alt="Delivery boy here to deliver your order." />
-              </div>
-              <div className="col-sm-3"></div>
-            </div>
-          )
-        });      
-      }
-    } else {
-      // logged in user is farmer
-      let cropdb = [];
-      let userEmail = '';
-      let userCrops = [];
-      // get the crops that belong to logged in farmer
-      firebase.database().ref('product').on('value', (snapshot) => {
-        snapshot.forEach((doc) => {
-          cropdb = cropdb.concat(doc);
-        });
-        firebase.auth().onAuthStateChanged((user) => {
-          if(user) {
-            userEmail = user.email;
-            for(let crop of cropdb) {
-              if(userEmail === crop.val().farmerEmail) {
-                userCrops = userCrops.concat(crop);
-              }
-            }
-          }
-          if(userCrops.length) {
-            this.setState({
-              cropsContent: (
-                <div id="info">
-                  <h2>Your Crops:</h2>
-                  {
-                    userCrops.map((product, pos) => {
-                      return(
-                        <ProductItem product={product} key={pos} />
-                      )
-                    })
-                  }
-                </div>
-              )
-            })
-          } else {
-            this.setState({
-              cropsContent: (
-                <div className="row">
-                  <div className="col-sm-3"></div>
-                  <div className="col-sm-6">
-                    <h3>Welcome back to Krishi Mart!<br />Your products appear here!</h3>
-                    <img style={{width: '75%', height: 'auto'}} src="./images/farmer-crop-upload.svg" alt="Delivery boy here to deliver your order." />
-                  </div>
-                  <div className="col-sm-3"></div>
-                </div>
-              )
-            }); 
-          }
-        });
-      });
-    }
   }
 
   render() {
