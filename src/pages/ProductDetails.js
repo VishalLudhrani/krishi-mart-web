@@ -106,7 +106,6 @@ class ProductDetails extends React.Component{
       buyerEmail: this.state.buyerEmail,
       buyerName: this.state.buyerName
     });
-    console.log(this.state.buyerEmail + " " + this.state.buyerName);
     alert("Order successful!\nPlease make sure you review the farmer!");
   }
 
@@ -116,7 +115,7 @@ class ProductDetails extends React.Component{
     firebase.database().ref('product/' + this.state.productID).update({
       review: this.state.review
     });
-    if(e.target.value) {
+    if(this.state.review) {
       alert("Thank you for adding a review..!\nWe hope you enjoyed shopping with Krishi Mart!😇")
     }
     this.props.history.push('/home');
