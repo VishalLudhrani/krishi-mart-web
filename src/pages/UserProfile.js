@@ -1,5 +1,6 @@
 import React from 'react';
 import firebase from 'firebase';
+import { withRouter } from 'react-router-dom';
 
 class UserProfile extends React.Component {
 	
@@ -68,7 +69,7 @@ class UserProfile extends React.Component {
 						<p>{this.state.userName}</p>
 						<p><i class="fas fa-phone-alt"></i> {this.state.phNo}</p>
 						<p><i class="fas fa-at"></i> {this.state.email}</p>
-						<button className="customBtn" style={{borderRadius: '10px'}}><i className="fas fa-pen"></i> Edit</button>
+						<button className="customBtn" style={{borderRadius: '10px'}} onClick={this.onEditProfile}><i className="fas fa-pen"></i> Edit</button>
 					</div>
 				</div>
 				<br />
@@ -103,6 +104,10 @@ class UserProfile extends React.Component {
 		}
 	}
 
+	onEditProfile = () => {
+		this.props.history.push('/update-profile')
+	}
+
 }
 
-export default UserProfile;
+export default withRouter(UserProfile);
