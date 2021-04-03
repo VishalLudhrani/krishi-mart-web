@@ -264,10 +264,12 @@ class Home extends React.Component {
         // loop through the results to check for matching results
         let queryData = []; // variable to store the matching results
         for(let snap of resultKey) {
-          let snapData = snap.val().crop.toLowerCase(); // crop in existing database
-          if(snapData.includes(this.state.searchQuery)) {
-            // if the search keyword is a substring of the crop name in db, add it to the variable
-            queryData = queryData.concat(snap);
+          if(snap) {
+            let snapData = snap.val().crop.toLowerCase(); // crop in existing database
+            if(snapData.includes(this.state.searchQuery)) {
+              // if the search keyword is a substring of the crop name in db, add it to the variable
+              queryData = queryData.concat(snap);
+            }
           }
         }
         this.setState({products: queryData});
