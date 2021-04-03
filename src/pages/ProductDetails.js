@@ -2,6 +2,8 @@ import React from 'react';
 import firebase from 'firebase';
 import { withRouter } from 'react-router-dom';
 
+const vader = require('vader-sentiment');
+
 class ProductDetails extends React.Component{
   state = {
     buyerEmail: '',
@@ -16,7 +18,9 @@ class ProductDetails extends React.Component{
     buyBtnStyle: 'display-none',
     review: '',
     reviewFormStyle: 'display-none',
-    productID: ''
+    productID: '',
+    reviewTop: [],
+    reviewPositivity: 'Calculating the'
   }
 
   componentDidMount() {
@@ -66,9 +70,29 @@ class ProductDetails extends React.Component{
         }
       })
     });
+
+    
   }
 
   render() {
+    let reviewString = '';
+    let review = [];
+    let intensity;
+    let reviewPositivity;
+    firebase.database().ref('product').on('value', (snapshot) => {
+      snapshot.forEach((doc) => {
+        if(this.state.farmerEmail === doc.val().farmerEmail) {
+          if(doc.val().review) {
+            reviewString += doc.val().review;
+            review.push(doc.val().review);
+          }
+        }
+      });
+      if(reviewString) {
+        intensity = vader.SentimentIntensityAnalyzer.polarity_scores(reviewString);
+        reviewPositivity = intensity.pos * 100;
+      }
+    })
     return(
       <div id="product-details" style={{fontSize: '1.25em'}}>
         <div className="row">
@@ -78,10 +102,22 @@ class ProductDetails extends React.Component{
             <p>Quantity: {this.state.quantity_kg} Kg</p>
             <p>{this.state.cropCategory} Rs. {this.state.price}</p>
             <p>{this.state.buyingStatus}</p>
+            <p>{reviewPositivity} % positive reviews</p>
             <button className={this.state.buyBtnStyle} style={{borderRadius: '14px'}} onClick={this.onBuyCrop}>Buy</button>
           </div>
           <div id="info" className="col-md-6">
-            <p className="content">Top reviews about {this.state.farmerName}'s products</p>
+            <h4 className="content" id="highlight">Top reviews about {this.state.farmerName}'s products</h4>
+            {
+              review.map((rev, pos) => {
+                return(
+                  <div>
+                    <p>{rev}</p>
+                    <hr />
+                    <br />
+                  </div>
+                )
+              })
+            }
           </div>
         </div>
         <div id="info" className={this.state.reviewFormStyle} style={{marginTop: '5%'}}>
@@ -106,7 +142,6 @@ class ProductDetails extends React.Component{
       buyerEmail: this.state.buyerEmail,
       buyerName: this.state.buyerName
     });
-    console.log(this.state.buyerEmail + " " + this.state.buyerName);
     alert("Order successful!\nPlease make sure you review the farmer!");
   }
 
@@ -116,7 +151,7 @@ class ProductDetails extends React.Component{
     firebase.database().ref('product/' + this.state.productID).update({
       review: this.state.review
     });
-    if(e.target.value) {
+    if(this.state.review) {
       alert("Thank you for adding a review..!\nWe hope you enjoyed shopping with Krishi Mart!😇")
     }
     this.props.history.push('/home');

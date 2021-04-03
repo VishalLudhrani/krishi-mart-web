@@ -259,7 +259,9 @@ class Home extends React.Component {
       firebase.database().ref('product/').on('value', (querySnapshot) => {
         querySnapshot.forEach((doc) => {
           // collect all the data in a variable
-          resultKey = resultKey.concat(doc);
+          if(!(doc.val().quantity_kg < 15 && doc.val().buyerEmail)) {
+            resultKey = resultKey.concat(doc);
+          }
         });
         // loop through the results to check for matching results
         let queryData = []; // variable to store the matching results
@@ -306,7 +308,16 @@ class Home extends React.Component {
       }
     } else {
       this.setState({
-        searchProgress: 'Please provide an input first..'
+        searchProgress: (
+          <div className="row">
+            <div className="col-sm-3"></div>
+            <div className="col-sm-6">
+              <h4>Please provide an input..<br />Check your groceries, and see what's missing..<br />We're here to help!😇</h4>
+              <img className="heroImg" src="./images/farmercropsnotfound.svg" alt="Delivery boy here to deliver your order." />
+            </div>
+            <div className="col-sm-3"></div>
+          </div>
+        )
       })
     }
   }
