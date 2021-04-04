@@ -12,16 +12,19 @@ class UserProfile extends React.Component {
 		address: '',
 		dataStatus: 'Loading...',
 		pageStyle: 'row',
-		products: []
+		products: [],
+		userCategory: '',
+		purchaseHistoryStyle: ''
 	}
 
 	componentDidMount() {
-		document.title = `${this.state.email} | Krishi Mart`;
+		document.title = "Krishi Mart";
 		var mql = window.matchMedia("screen and (max-width: 576px)");
     this.pageStyle(mql)
     mql.addEventListener('change', this.pageStyle);
 		firebase.auth().onAuthStateChanged((user) => {
 			if(user) {
+				document.title = `${user.displayName} | Krishi Mart`;
 				this.setState({
 					userName: user.displayName,
 					email: user.email,
@@ -40,7 +43,8 @@ class UserProfile extends React.Component {
 					}
 					this.setState({
 						phNo: loggedInUser.phNo,
-						address: loggedInUser.address
+						address: loggedInUser.address,
+						userCategory: loggedInUser.category
 					})
 				})
 				firebase.database().ref('product/').on('value', (snapshot) => {
@@ -56,8 +60,16 @@ class UserProfile extends React.Component {
 				this.setState({
 					dataStatus: 'Loading...'
 				})
+				this.props.history.push('/home');
 			}
-		})
+			if(this.state.userCategory) {
+				if(this.state.userCategory === 'farmer') {
+					this.setState({purchaseHistoryStyle: 'display-none'});
+				} else {
+					this.setState({purchaseHistoryStyle: 'display-block'});
+				}
+			}
+		});
 	}
 
 	render() {
@@ -67,29 +79,32 @@ class UserProfile extends React.Component {
 					<img className="col-sm-4" src="https://www.flaticon.com/svg/vstatic/svg/848/848006.svg?token=exp=1616830677~hmac=c72242cc9aab76b7b770e10533c1f462" width="128" height="128" />
 					<div className="col-sm-8" style={{padding: '10px'}}>
 						<p>{this.state.userName}</p>
-						<p><i class="fas fa-phone-alt"></i> {this.state.phNo}</p>
-						<p><i class="fas fa-at"></i> {this.state.email}</p>
+						<p><i className="fas fa-phone-alt"></i> {this.state.phNo}</p>
+						<p><i className="fas fa-at"></i> {this.state.email}</p>
 						<button className="customBtn" style={{borderRadius: '10px'}} onClick={this.onEditProfile}><i className="fas fa-pen"></i> Edit</button>
 					</div>
 				</div>
 				<br />
 				<div className={this.state.pageStyle}>
-					<h4 style={{textAlign: 'center'}}>Your purchase history</h4>
-					<hr />
-					<br />
-					<div>
-						{
-							this.state.products.map((product, pos) => {
-								return(
-									<div>
-										<p>Crop: {product.crop}</p>
-										<p>Quantity: {product.quantity_kg} Kg</p>
-										<p>Price: {product.crop}/Kg</p>
-										<p>Sold by: {product.farmerName} ({product.farmerEmail})</p>
-									</div>
-								)
-							})
-						}
+					<div className={this.state.purchaseHistoryStyle}>
+						<h4 style={{textAlign: 'center'}}>Your purchase history</h4>
+						<hr />
+						<br />
+						<div>
+							{
+								this.state.products.map((product, pos) => {
+									return(
+										<div>
+											<p>Crop: {product.crop}</p>
+											<p>Quantity: {product.quantity_kg} Kg</p>
+											<p>Price: {product.price}/Kg</p>
+											<p>Sold by: {product.farmerName} ({product.farmerEmail})</p>
+											<hr />
+										</div>
+									)
+								})
+							}
+						</div>
 					</div>
 				</div>
 			</div>

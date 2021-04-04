@@ -2,6 +2,8 @@ import React from 'react';
 import firebase from 'firebase';
 import { Link } from 'react-router-dom';
 
+const currentTimestamp = Date.now();
+
 class AddCrop extends React.Component {
 
 	state = {
@@ -153,7 +155,7 @@ class AddCrop extends React.Component {
 	handleSubmit = (e) => {
 		e.preventDefault();
 		this.setState({
-			cropID: this.state.farmerPhNo + this.state.crop.replace(/ /g, '').toLowerCase(),
+			cropID: this.state.farmerPhNo + this.state.crop.replace(/ /g, '').toLowerCase() + currentTimestamp,
 			btn: (
 				<button class="btn btn-primary" type="button" style={{backgroundColor: '#49A078'}} disabled>
 					<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
