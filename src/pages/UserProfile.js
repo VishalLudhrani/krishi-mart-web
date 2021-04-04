@@ -60,9 +60,7 @@ class UserProfile extends React.Component {
 				this.setState({
 					dataStatus: 'Loading...'
 				})
-				alert("Dear user, you're logged out..\nPlease login to continue!").then(() => {
-					this.props.history.push('/login');
-				})
+				this.props.history.push('/home');
 			}
 			if(this.state.userCategory) {
 				if(this.state.userCategory === 'farmer') {
@@ -101,6 +99,7 @@ class UserProfile extends React.Component {
 											<p>Quantity: {product.quantity_kg} Kg</p>
 											<p>Price: {product.price}/Kg</p>
 											<p>Sold by: {product.farmerName} ({product.farmerEmail})</p>
+											<hr />
 										</div>
 									)
 								})

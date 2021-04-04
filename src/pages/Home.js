@@ -185,7 +185,7 @@ class Home extends React.Component {
             </div>
             <div className={this.state.logoutStyle}>
               <div id="info" className="input-group mb-3">
-                <input type="text" className="form-control" placeholder="Search for veggies.." aria-label="Search for veggies.." aria-describedby="button-addon2" onChange={this.onSearchQueryChange} value={this.state.searchQuery} />
+                <input type="text" className="form-control" placeholder="Search for groceries.." aria-label="Search for veggies.." aria-describedby="button-addon2" onChange={this.onSearchQueryChange} value={this.state.searchQuery} />
                 <button className="btn btn-outline-success" type="button" id="button-addon2" onClick={this.productSearch}>Search</button>
               </div>
               <div id="info">
@@ -279,11 +279,12 @@ class Home extends React.Component {
               reviewPos = vader.SentimentIntensityAnalyzer.polarity_scores(reviewRaw);
               reviewPos = reviewPos.pos * 100;
               firebase.database().ref('user').on('value', (userSnapshot) => {
-                userSnapshot.forEach((user) => {
+                for(let user of userSnapshot) {
                   if(farmer === user.val().email) {
                     farmerObj = user.val();
+                    break;
                   }
-                })
+                }
                 firebase.database().ref('user/' + farmerObj.phNo).update({
                   percentPositiveReview: reviewPos
                 })
