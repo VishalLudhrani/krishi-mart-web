@@ -3,6 +3,8 @@ import firebase from 'firebase';
 import { Link } from 'react-router-dom';
 import ProductItem from './ProductItem';
 
+const vader = require('vader-sentiment');
+
 class Home extends React.Component {
   state = {
     loggedInUser: '',
@@ -261,6 +263,32 @@ class Home extends React.Component {
           // collect all the data in a variable
           if(!(doc.val().quantity_kg < 15 && doc.val().buyerEmail)) {
             resultKey = resultKey.concat(doc);
+            // 1. identify the farmer
+            let farmer = doc.val().farmerEmail;
+            // 2. collect reviews from their corresponding products
+            let reviewRaw;
+            let reviewPos;
+            let farmerObj;
+            firebase.database().ref('product').on('value', (snapshot) => {
+              snapshot.forEach((s) => {
+                if(farmer === s.val().farmerEmail) {
+                  reviewRaw += s.val().review;
+                }
+              })
+              // 3. calculate the positivity, and store it in farmer's object in the db
+              reviewPos = vader.SentimentIntensityAnalyzer.polarity_scores(reviewRaw);
+              reviewPos = reviewPos.pos * 100;
+              firebase.database().ref('user').on('value', (userSnapshot) => {
+                userSnapshot.forEach((user) => {
+                  if(farmer === user.val().email) {
+                    farmerObj = user.val();
+                  }
+                })
+                firebase.database().ref('user/' + farmerObj.phNo).update({
+                  percentPositiveReview: reviewPos
+                })
+              })
+            })
           }
         });
         // loop through the results to check for matching results

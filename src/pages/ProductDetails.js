@@ -16,6 +16,7 @@ class ProductDetails extends React.Component{
     quantity_kg: null,
     cropCategory: '',
     buyBtnStyle: 'display-none',
+    buyBtnContent: '',
     review: '',
     reviewFormStyle: 'display-none',
     productID: '',
@@ -36,17 +37,35 @@ class ProductDetails extends React.Component{
         quantity_kg: doc.val().quantity_kg
       });
       document.title = `${doc.val().crop} | Krishi Mart`;
-      if(doc.val().quantity_kg <= 15) {
-        this.setState({cropCategory: 'Price fixed at'});
-      } else {
-        this.setState({cropCategory: 'Current bid at'})
-      }
-      if(doc.val().buyerName) {
+      // set the crop purchase status based on the purchase/bidding history, and quantity
+      // if quantity is less than 15kg, price is fixed; else it has to be auctioned
+      if(doc.val().quantity_kg < 15) {
         this.setState({
-          buyingStatus: `Current bid by ${doc.val().buyerName}`,
-          buyerEmail: doc.val().buyerEmail,
-          buyerName: doc.val().buyerName
-        })
+          cropCategory: 'Price fixed at',
+          buyBtnContent: 'Buy'
+        });
+        if(doc.val().buyerName) {
+          this.setState({
+            buyingStatus: `Bought by ${doc.val().buyerName}`,
+            buyerEmail: doc.val().buyerEmail,
+            buyerName: doc.val().buyerName
+          })
+        }
+      } else {
+        if(doc.val().buyerName) {
+          this.setState({
+            cropCategory: 'Current bid at',
+            buyingStatus: `Current bid by ${doc.val().buyerName}`,
+            buyerEmail: doc.val().buyerEmail,
+            buyerName: doc.val().buyerName,
+            buyBtnContent: 'Bid'
+          })
+        } else {
+          this.setState({
+            cropCategory: 'Bid starts at',
+            buyBtnContent: 'Bid'
+          })
+        }
       }
     });
     // check for user category, if it's farmer, let him see just the details; if it's consumer, display the option to buy
@@ -103,7 +122,7 @@ class ProductDetails extends React.Component{
             <p>{this.state.cropCategory} Rs. {this.state.price}</p>
             <p>{this.state.buyingStatus}</p>
             <p>{reviewPositivity} % positive reviews</p>
-            <button className={this.state.buyBtnStyle} style={{borderRadius: '14px'}} onClick={this.onBuyCrop}>Buy</button>
+            <button className={this.state.buyBtnStyle} style={{borderRadius: '14px'}} onClick={this.onBuyCrop}>{this.state.buyBtnContent}</button>
           </div>
           <div id="info" className="col-md-6">
             <h4 className="content" id="highlight">Top reviews about {this.state.farmerName}'s products</h4>
