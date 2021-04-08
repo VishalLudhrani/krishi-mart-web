@@ -77,6 +77,10 @@ class EditUser extends React.Component {
     });
   }
 
+  componentWillUnmount() {
+    firebase.database().ref('user/').off();
+  }
+
   render() {
     return(
       <div className="content">

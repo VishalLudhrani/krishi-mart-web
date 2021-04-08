@@ -2,6 +2,8 @@ import React from 'react';
 import firebase from 'firebase';
 import { Link, withRouter } from 'react-router-dom';
 
+const mql = window.matchMedia("screen and (max-width: 576px)");
+
 class Register extends React.Component {
   state = {
     email: '',
@@ -25,7 +27,6 @@ class Register extends React.Component {
 
   componentDidMount() {
     document.title = "Register | Krishi Mart";
-    var mql = window.matchMedia("screen and (max-width: 576px)");
     this.formStyle(mql)
     mql.addEventListener('change', this.formStyle);
 
@@ -79,6 +80,10 @@ class Register extends React.Component {
         })
       }
     })
+  }
+
+  componentWillUnmount() {
+    mql.removeEventListener('change', this.pageStyle);
   }
 
   render() {

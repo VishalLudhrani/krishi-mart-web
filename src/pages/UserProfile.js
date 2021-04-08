@@ -2,6 +2,8 @@ import React from 'react';
 import firebase from 'firebase';
 import { withRouter } from 'react-router-dom';
 
+const mql = window.matchMedia("screen and (max-width: 576px)");
+
 class UserProfile extends React.Component {
 	
 	state = {
@@ -19,7 +21,6 @@ class UserProfile extends React.Component {
 
 	componentDidMount() {
 		document.title = "Krishi Mart";
-		var mql = window.matchMedia("screen and (max-width: 576px)");
     this.pageStyle(mql)
     mql.addEventListener('change', this.pageStyle);
 		firebase.auth().onAuthStateChanged((user) => {
@@ -70,6 +71,12 @@ class UserProfile extends React.Component {
 				}
 			}
 		});
+	}
+
+	componentWillUnmount() {
+		firebase.database().ref('product/').off();
+		firebase.database().ref('user/').off();
+		mql.removeEventListener('change', this.pageStyle);
 	}
 
 	render() {

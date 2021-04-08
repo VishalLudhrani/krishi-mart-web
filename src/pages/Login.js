@@ -2,6 +2,8 @@ import React from 'react';
 import firebase from 'firebase';
 import { withRouter } from 'react-router-dom';
 
+const mql = window.matchMedia("screen and (max-width: 576px)");
+
 class Login extends React.Component {
   state = {
     userEmail: '',
@@ -16,7 +18,6 @@ class Login extends React.Component {
 
   componentDidMount() {
     document.title = "Login | Krishi Mart";
-    var mql = window.matchMedia("screen and (max-width: 576px)");
     this.formStyle(mql)
     mql.addEventListener('change', this.formStyle);
     firebase.auth().onAuthStateChanged((user) => {
@@ -24,6 +25,10 @@ class Login extends React.Component {
         this.setState({loggedInUser: user.email});
       }
     });
+  }
+
+  componentWillUnmount() {
+    mql.removeEventListener('change', this.formStyle);
   }
 
   render() {

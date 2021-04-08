@@ -21,6 +21,10 @@ class ProductItem extends React.Component {
     })
   }
 
+  componentWillUnmount() {
+    firebase.database().ref('user/').off();
+  }
+
   render() {
     let product = this.props.product.val();
     let reviewPosBadge = (

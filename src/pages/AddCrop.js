@@ -3,6 +3,7 @@ import firebase from 'firebase';
 import { Link } from 'react-router-dom';
 
 const currentTimestamp = Date.now();
+const mql = window.matchMedia("screen and (max-width: 576px)");
 
 class AddCrop extends React.Component {
 
@@ -26,7 +27,6 @@ class AddCrop extends React.Component {
 	}
 
 	componentDidMount() {
-		var mql = window.matchMedia("screen and (max-width: 576px)");
 		let userCategory = '';
     this.formStyle(mql)
     mql.addEventListener('change', this.formStyle);
@@ -64,6 +64,12 @@ class AddCrop extends React.Component {
         });
 			}
 		});
+	}
+
+	componentWillUnmount() {
+		firebase.database().ref('product/').off();
+		firebase.database().ref('user/').off();
+		mql.removeEventListener('change', this.formStyle);
 	}
 
 	render() {

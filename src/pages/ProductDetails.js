@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom';
 
 const vader = require('vader-sentiment');
 const currentTimestamp = Date.now();
+const mql = window.matchMedia("screen and (max-width: 576px)");
 
 class ProductDetails extends React.Component{
   state = {
@@ -30,7 +31,6 @@ class ProductDetails extends React.Component{
   }
 
   componentDidMount() {
-    var mql = window.matchMedia("screen and (max-width: 576px)");
     this.pageStyle(mql)
     mql.addEventListener('change', this.pageStyle);
 
@@ -135,6 +135,13 @@ class ProductDetails extends React.Component{
     })
   }
 
+  componentWillUnmount() {
+    firebase.database().ref('product/').off();
+    firebase.database().ref('product/').off();
+    firebase.database().ref('user/').off();
+    mql.removeEventListener('change', this.pageStyle);
+  }
+
   render() {
     let reviewString = '';
     let review = [];
@@ -145,13 +152,18 @@ class ProductDetails extends React.Component{
         if(this.state.farmerEmail === doc.val().farmerEmail) {
           if(doc.val().review) {
             reviewString += doc.val().review;
-            review.push(doc.val().review);
+            if(review.length <= 3) {
+              review.push({
+                buyerName: doc.val().buyerName,
+                buyerReview: doc.val().review
+              });
+            }
           }
         }
       });
       if(reviewString) {
         intensity = vader.SentimentIntensityAnalyzer.polarity_scores(reviewString);
-        reviewPositivity = intensity.pos * 100;
+        reviewPositivity = (intensity.pos * 100).toFixed(2);
       }
     })
     return(
@@ -168,12 +180,12 @@ class ProductDetails extends React.Component{
             <button id="btn" className={this.state.buyBtnStyle} style={{borderRadius: '14px'}} onClick={this.onBuyCrop}>{this.state.buyBtnContent}</button>
           </div>
           <div id="info" className="col-md-6">
-            <h4 className="content" id="highlight">Top reviews about {this.state.farmerName}'s products</h4>
+            <h3 className="content" id="highlight">Top reviews about {this.state.farmerName}'s products</h3>
             {
               review.map((rev, pos) => {
                 return(
-                  <div>
-                    <p>{rev}</p>
+                  <div key={pos}>
+                    <p>{rev.buyerName ? rev.buyerName : "A user"} says "{rev.buyerReview}"</p>
                     <hr />
                     <br />
                   </div>

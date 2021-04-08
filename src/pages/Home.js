@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import ProductItem from './ProductItem';
 
 const vader = require('vader-sentiment');
+const mql = window.matchMedia("screen and (max-width: 576px)");
 
 class Home extends React.Component {
   state = {
@@ -28,7 +29,6 @@ class Home extends React.Component {
 
   componentDidMount() {
     document.title = "Home | Krishi Mart";
-    var mql = window.matchMedia("screen and (max-width: 576px)");
     this.formStyle(mql)
     mql.addEventListener('change', this.formStyle);
 
@@ -151,6 +151,15 @@ class Home extends React.Component {
         });
       }
     });
+  }
+
+  componentWillUnmount() {
+    firebase.database().ref('product').off();
+    firebase.database().ref('product').off();
+    firebase.database().ref('product/').off();
+    firebase.database().ref('user/').off();
+    firebase.database().ref('user').off();
+    mql.removeEventListener('change', this.formStyle);
   }
 
   render() {
