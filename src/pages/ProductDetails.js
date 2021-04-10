@@ -5,6 +5,7 @@ import { withRouter } from 'react-router-dom';
 const vader = require('vader-sentiment');
 const currentTimestamp = Date.now();
 const mql = window.matchMedia("screen and (max-width: 576px)");
+let reviewPositivity;
 
 class ProductDetails extends React.Component{
   state = {
@@ -139,6 +140,7 @@ class ProductDetails extends React.Component{
     firebase.database().ref('product/').off();
     firebase.database().ref('product/').off();
     firebase.database().ref('user/').off();
+    firebase.database().ref('user/').off();
     mql.removeEventListener('change', this.pageStyle);
   }
 
@@ -146,7 +148,6 @@ class ProductDetails extends React.Component{
     let reviewString = '';
     let review = [];
     let intensity;
-    let reviewPositivity;
     firebase.database().ref('product').on('value', (snapshot) => {
       snapshot.forEach((doc) => {
         if(this.state.farmerEmail === doc.val().farmerEmail) {
@@ -214,18 +215,27 @@ class ProductDetails extends React.Component{
       });
       // set the buyer details in the database
       firebase.database().ref('product/' + this.state.productID).update({
-        buyerEmail: this.state.buyerEmail,
-        buyerName: this.state.buyerName
+        buyerEmail: this.state.userEmail,
+        buyerName: this.state.userName
       });
       alert("Order successful!\nPlease make sure you review the farmer!");
     } else {
       let currentTime = Date.now();
-      let bidShouldEnd = currentTime + 3600000;
+      let bidShouldEnd = currentTime + 3600000; // provide 1 hour time for each bid
       firebase.database().ref('product/' + this.props.match.params.id).update({
        price: this.state.price,
        buyerEmail: this.state.userEmail,
        buyerName: this.state.userName,
        bidEnds: bidShouldEnd
+     })
+     firebase.database().ref('user/').on('value', (userSnapshot) => {
+       userSnapshot.forEach((user) => {
+         if(user.email === this.state.farmerEmail) {
+           firebase.database().ref('user/' + user.phNo).update({
+             percentPositiveReview: reviewPositivity
+           })
+         }
+       })
      })
      this.props.history.push('/user-profile')
     }
@@ -235,7 +245,7 @@ class ProductDetails extends React.Component{
     e.preventDefault();
     // set the review
     firebase.database().ref('product/' + this.state.productID).update({
-      review: this.state.review
+      review: this.state.review,
     });
     if(this.state.review) {
       alert("Thank you for adding a review..!\nWe hope you enjoyed shopping with Krishi Mart!😇")

@@ -14,7 +14,7 @@ class ProductItem extends React.Component {
       userSnapshot.forEach((user) => {
         if(user.val().email === farmer) {
           this.setState({
-            reviewPos: user.val().percentPositiveReview.toFixed(2)
+            reviewPos: user.val().percentPositiveReview
           });
         }
       })
@@ -27,9 +27,16 @@ class ProductItem extends React.Component {
 
   render() {
     let product = this.props.product.val();
-    let reviewPosBadge = (
-      <span className="badge bg-success">{this.state.reviewPos}% positive reviews</span>
-    );
+    let reviewPosBadge;
+    if(this.state.reviewPos) {
+      reviewPosBadge = (
+        <span className="badge bg-success">{this.state.reviewPos.toFixed(2)}% positive reviews</span>
+      );
+    } else {
+      reviewPosBadge = (
+        <span className="badge bg-success">Insufficient data for % positive reviews</span>
+      )
+    }
     return(
       <div onClick={this.onClick} className="productList cursor-pointer" style={{margin: '2%'}}>
         <p><strong>Crop name: </strong>{product.crop}</p>

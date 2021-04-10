@@ -278,26 +278,36 @@ class Home extends React.Component {
             let reviewRaw;
             let reviewPos;
             let farmerObj;
+            let breakFlag = true;
             firebase.database().ref('product').on('value', (snapshot) => {
               snapshot.forEach((s) => {
                 if(farmer === s.val().farmerEmail) {
-                  reviewRaw += s.val().review;
+                  if(s.val().review) {
+                    reviewRaw += s.val().review;
+                  }
                 }
               })
               // 3. calculate the positivity, and store it in farmer's object in the db
-              reviewPos = vader.SentimentIntensityAnalyzer.polarity_scores(reviewRaw);
-              reviewPos = reviewPos.pos * 100;
-              firebase.database().ref('user').on('value', (userSnapshot) => {
-                for(let user of userSnapshot) {
-                  if(farmer === user.val().email) {
-                    farmerObj = user.val();
-                    break;
+              if(reviewRaw) {
+                console.log(reviewRaw);
+                reviewPos = vader.SentimentIntensityAnalyzer.polarity_scores(reviewRaw);
+                console.log(reviewPos);
+                reviewPos = reviewPos.pos * 100;
+                firebase.database().ref('user/').on('value', (userSnapshot) => {
+                  userSnapshot.forEach((user) => {
+                    if(breakFlag && farmer === user.val().email) {
+                      farmerObj = user.val();
+                      breakFlag = false;
+                    }
+                  })
+                  if(reviewPos) {
+                    firebase.database().ref('user/' + farmerObj.phNo).update({
+                      percentPositiveReview: reviewPos
+                    })
+                    console.log('success pushing the updated review percentage');
                   }
-                }
-                firebase.database().ref('user/' + farmerObj.phNo).update({
-                  percentPositiveReview: reviewPos
                 })
-              })
+              }
             })
           }
         });
