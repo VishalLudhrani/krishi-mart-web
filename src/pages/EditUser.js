@@ -39,7 +39,7 @@ class EditUser extends React.Component {
               <br />
               <br />
               <label>Phone: <br />
-                <input type="text" defaultValue={this.state.userPhNo} onChange={this.handlePhNoChange} required />
+                <input type="tel" pattern="[789][0-9]{9}" title="Please provide valid phone number" defaultValue={this.state.userPhNo} onChange={this.handlePhNoChange} required />
               </label>
               <br />
               <br />
@@ -64,12 +64,9 @@ class EditUser extends React.Component {
       } else {
         this.setState({
           editUserContent: (
-            <div>
+            <div id="highlight">
               <h1>Seems like you're logged out..</h1>
-              <h3>Please Login if you're an existing user..</h3>
-              <button className="customBtn"><Link className="customBtn" to={'/login'}>Login</Link></button>
-              <h3>Please Register if you're a new user..</h3>
-              <button className="customBtn"><Link className="customBtn" to={'/register'}>Register</Link></button>
+              <h3>Please head to the <Link to='/home'>Home Page</Link>, and login..</h3>
             </div>
           )
         })

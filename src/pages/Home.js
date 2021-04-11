@@ -1,6 +1,6 @@
 import React from 'react';
 import firebase from 'firebase';
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import ProductItem from './ProductItem';
 
 const vader = require('vader-sentiment');
@@ -41,7 +41,6 @@ class Home extends React.Component {
           // change the style for login element,
           loginStyle: "display-none",
           logoutStyle: "display-block row",
-          isLoading: false
         });
         // check if the user is farmer, and set the screen content accordingly
         firebase.database().ref('user/').on('value', (snapshot) => {
@@ -53,7 +52,8 @@ class Home extends React.Component {
           for(let u of userdb) {
             if(u.category === 'farmer' && u.email === user.email) {
               this.setState({
-                loggedInUserCategory: 'farmer'
+                loggedInUserCategory: 'farmer',
+                isLoading: false
               });
               // logged in user is farmer
               let cropdb = [];
@@ -108,7 +108,8 @@ class Home extends React.Component {
             }
             if(u.category === 'consumer' && u.email === user.email) {
               this.setState({
-                loggedInUserCategory: 'consumer'
+                loggedInUserCategory: 'consumer',
+                isLoading: false
               });
               // logged in user is a consumer
               if(this.state.searchQuery) {
@@ -182,10 +183,10 @@ class Home extends React.Component {
                 <h3 id="highlight" className="heroTitle">Khet Se Ghar Tak</h3>
                 <div id="info">
                   <p className="heroText">Providing you fresh, and organic vegetables.. Straight from the farm!</p>
-                  <button className="customBtn"><Link className="customBtn" to="/login">Login</Link></button>
+                  <button className="customBtn" onClick={this.onSignup}>Login</button>
                   <br />
                   <br />
-                  <button className="customBtnSecondary"><Link className="customBtnSecondaryx" to="/register">Register</Link></button>
+                  <button className="customBtnSecondary" onClick={this.onSignup}>Register</button>
                 </div>
               </div>
               <div className="col-sm-6">
@@ -222,10 +223,10 @@ class Home extends React.Component {
                 <h3 id="highlight" className="heroTitle">Khet Se Ghar Tak</h3>
                 <div id="info">
                   <p className="heroText">Providing you fresh, and organic vegetables.. Straight from the farm!</p>
-                  <button className="customBtn"><Link className="customBtn" to="/login">Login</Link></button>
+                  <button className="customBtn" onClick={this.onSignup}>Login</button>
                   <br />
                   <br />
-                  <button className="customBtnSecondary"><Link className="customBtnSecondaryx" to="/register">Register</Link></button>
+                  <button className="customBtnSecondary" onClick={this.onSignup}>Register</button>
                 </div>
               </div>
               <div className="col-sm-6">
@@ -373,6 +374,37 @@ class Home extends React.Component {
   onSearchQueryChange = (event) => {
     this.setState({searchQuery: event.target.value.toLowerCase()});
   }
+
+  onSignup = () => {
+    let provider = new firebase.auth.GoogleAuthProvider();
+    firebase.auth()
+      .signInWithPopup(provider)
+        .then((result) => {
+          // The signed-in user info.
+          let user = result.user;
+          let userFlag = true;
+          let userFound = false;
+          firebase.database().ref('user/').on('value', (userSnapshot) => {
+            userSnapshot.forEach((userSnap) =>{
+              if(userFlag && userSnap.val().email === user.email) {
+                userFlag = false;
+                userFound = true;
+              }
+            });
+            if(!userFound) {
+              alert(`Dear ${user.displayName}, let's first set up your profile!`)
+              this.props.history.push('/update-profile');
+            }
+          })
+          // ...
+        }).catch((error) => {
+          // Handle Errors here.
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          
+          alert(`${errorCode}\n${errorMessage}`);
+        });
+    }
 }
 
-export default Home;
+export default withRouter(Home);

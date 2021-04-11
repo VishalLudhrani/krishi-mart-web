@@ -83,7 +83,9 @@ class UserProfile extends React.Component {
 		return(
 			<div>
 				<div id="product-details" className={this.state.pageStyle}>
-					<img className="col-sm-4" src="https://www.flaticon.com/svg/vstatic/svg/848/848006.svg?token=exp=1616830677~hmac=c72242cc9aab76b7b770e10533c1f462" width="128" height="128" />
+					<div className="col-sm-4">
+						<i className="far fa-user" style={{fontSize: '10rem'}}></i>
+					</div>
 					<div className="col-sm-8" style={{padding: '10px'}}>
 						<p>{this.state.userName}</p>
 						<p><i className="fas fa-phone-alt"></i> {this.state.phNo}</p>
