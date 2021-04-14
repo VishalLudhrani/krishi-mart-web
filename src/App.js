@@ -46,6 +46,9 @@ class App extends React.Component {
                     <form className="d-flex">
                       <div className="d-flex align-items-center">  
                         <ul style={{display: 'inline'}, {listStyle: 'none'}} className="navbar-nav align-items-center">
+                          <li style={{fontSize: '1.5rem', color: '#49A078', margin: 'auto 20px'}} title="My Cart">
+                            <i className="fas fa-shopping-cart cursor-pointer"></i>
+                          </li>
                           <li style={{display: 'inline'}}>
                             <div id="google_translate_element">
                               <span className="nav-link cursor-pointer">Please select a language</span>

@@ -290,9 +290,7 @@ class Home extends React.Component {
               })
               // 3. calculate the positivity, and store it in farmer's object in the db
               if(reviewRaw) {
-                console.log(reviewRaw);
                 reviewPos = vader.SentimentIntensityAnalyzer.polarity_scores(reviewRaw);
-                console.log(reviewPos);
                 reviewPos = reviewPos.pos * 100;
                 firebase.database().ref('user/').on('value', (userSnapshot) => {
                   userSnapshot.forEach((user) => {
@@ -305,7 +303,6 @@ class Home extends React.Component {
                     firebase.database().ref('user/' + farmerObj.phNo).update({
                       percentPositiveReview: reviewPos
                     })
-                    console.log('success pushing the updated review percentage');
                   }
                 })
               }

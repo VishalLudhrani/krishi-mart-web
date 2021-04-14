@@ -157,3 +157,8 @@ input[type="submit"] {
 #product-details {
   margin-top: 5%;
 }
+
+.cursor-disabled {
+  cursor: not-allowed;
+  background: #A2BDAD;
+}

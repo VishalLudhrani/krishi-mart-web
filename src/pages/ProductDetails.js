@@ -28,7 +28,10 @@ class ProductDetails extends React.Component{
     pageStyle: '',
     bidStatus: '',
     userName: '',
-    userEmail: ''
+    userEmail: '',
+    userPh: '',
+    loadingStateStyle: 'display-block text-center',
+    productStateStyle: 'display-none'
   }
 
   componentDidMount() {
@@ -36,7 +39,7 @@ class ProductDetails extends React.Component{
     mql.addEventListener('change', this.pageStyle);
 
     let productId = this.props.match.params.id;
-    this.setState({productID: productId})
+    this.setState({productID: productId});
     // get the crop details from database
     firebase.database().ref("product/" + productId).on('value', (doc) => {
       this.setState({
@@ -44,7 +47,9 @@ class ProductDetails extends React.Component{
         farmerName: doc.val().farmerName,
         farmerEmail: doc.val().farmerEmail,
         crop: doc.val().crop,
-        quantity_kg: doc.val().quantity_kg
+        quantity_kg: doc.val().quantity_kg,
+        productStateStyle: 'display-block row',
+        loadingStateStyle: 'display-none'
       });
       document.title = `${doc.val().crop} | Krishi Mart`;
       // set the crop purchase status based on the purchase/bidding history, and quantity
@@ -52,7 +57,7 @@ class ProductDetails extends React.Component{
       if(doc.val().quantity_kg < 15) {
         this.setState({
           cropCategory: 'Price fixed at',
-          buyBtnContent: 'Buy'
+          buyBtnContent: 'Add to cart'
         });
         if(doc.val().buyerName) {
           this.setState({
@@ -68,12 +73,10 @@ class ProductDetails extends React.Component{
             buyingStatus: `Current bid by ${doc.val().buyerName}`,
             buyerEmail: doc.val().buyerEmail,
             buyerName: doc.val().buyerName,
-            buyBtnContent: 'Bid'
           })
         } else {
           this.setState({
             cropCategory: 'Bid starts at',
-            buyBtnContent: 'Bid'
           })
         }
       }
@@ -94,9 +97,26 @@ class ProductDetails extends React.Component{
             for(let u of userdb) {
               if(u.category === 'farmer' && u.email === user.email) {
                 this.setState({buyBtnStyle: 'display-none'});
+                break;
               }
               if(u.category === 'consumer' && u.email === user.email) {
-                this.setState({buyBtnStyle: 'display-block customBtn'})
+                this.setState({
+                  buyBtnStyle: 'display-block customBtn',
+                  userPh: u.phNo
+                });
+                let cartItemKey = Object.keys(u.cart).toString();
+                if(u.cart[cartItemKey].productID === this.state.productID) {
+                  this.setState({
+                    buyBtnContent: (
+                      <div>
+                        <i className="fas fa-check"></i> Added to cart
+                      </div>
+                    )
+                  });
+                  document.getElementById("btn").disabled = true;
+                  document.getElementById("btn").classList.add('cursor-disabled');
+                }
+                break;
               }
             }
           }
@@ -106,30 +126,41 @@ class ProductDetails extends React.Component{
 
     // check if it's the starting bid, if so, just update the buyer's name and email, and start the timer
     firebase.database().ref('product/' + productId).on('value', (productSnapshot) => {
-      if(productSnapshot.val().buyerName) {
-        // if the timer is on
-        if(productSnapshot.val().bidEnds >= currentTimestamp) {
-          //    if existing user's bid is present, disable bidding
-          if(this.state.userEmail === productSnapshot.val().buyerEmail) {
-            document.querySelector('#btn').disabled = true;
-          } else {
-            //    else increase the bid by 10 rupees and update the amount on button, reflect it on the database as well on button click
-            document.querySelector('#btn').disabled = false;
-            let cropPrice = productSnapshot.val().price + 10;
-            let btnContent = `Bid Rs. ${cropPrice}/Kg`
+      if(productSnapshot.val().quantity_kg >= 15) {
+        if(productSnapshot.val().buyerName) {
+          // if the timer is on
+          if(productSnapshot.val().bidEnds >= currentTimestamp) {
+            //    if existing user's bid is present, disable bidding
+            if(this.state.userEmail === productSnapshot.val().buyerEmail) {
+              document.querySelector('#btn').disabled = true;
+              this.setState({
+                buyBtnContent: '',
+                buyBtnStyle: 'display-none'
+              })
+            } else {
+              //    else increase the bid by 10 rupees and update the amount on button, reflect it on the database as well on button click
+              document.querySelector('#btn').disabled = false;
+              let cropPrice = productSnapshot.val().price + 10;
+              let btnContent = `Bid Rs. ${cropPrice}/Kg`
+              this.setState({
+                buyBtnContent: btnContent,
+                price: cropPrice
+              })
+            }
             this.setState({
-              buyBtnContent: btnContent,
-              price: cropPrice
+              bidStatus: `Bid ends at ${new Date(productSnapshot.val().bidEnds).toLocaleString()}`,
+            })
+          } else {
+            // else close the bid
+            document.querySelector('#btn').disabled = true;
+            this.setState({
+              bidStatus: `Bid ended at ${new Date(productSnapshot.val().bidEnds).toLocaleString()}`,
             })
           }
+        }
+        if(!(productSnapshot.val().bidEnds)) {
           this.setState({
-            bidStatus: `Bid ends at ${new Date(productSnapshot.val().bidEnds).toLocaleString()}`,
-          })
-        } else {
-          // else close the bid
-          document.querySelector('#btn').disabled = true;
-          this.setState({
-            bidStatus: `Bid ended at ${new Date(productSnapshot.val().bidEnds).toLocaleString()}`,
+            buyBtnContent: `Bid Rs. ${productSnapshot.val().price}/Kg`
           })
         }
       }
@@ -169,7 +200,7 @@ class ProductDetails extends React.Component{
     })
     return(
       <div id="product-details" className={this.state.pageStyle} style={{fontSize: '1.25em'}}>
-        <div className="row">
+        <div className={this.state.productStateStyle}>
           <div id="info" className="col-md-6">
             <h2 id="highlight">{this.state.crop}</h2>
             <p>Sold by {this.state.farmerName}</p>
@@ -177,7 +208,7 @@ class ProductDetails extends React.Component{
             <p>{this.state.cropCategory} Rs. {this.state.price}/Kg</p>
             <p>{this.state.bidStatus}</p>
             <p>{this.state.buyingStatus}</p>
-            <p>{reviewPositivity} % positive reviews</p>
+            <p>{reviewPositivity ? reviewPositivity : "Insufficient data for"} % positive reviews</p>
             <button id="btn" className={this.state.buyBtnStyle} style={{borderRadius: '14px'}} onClick={this.onBuyCrop}>{this.state.buyBtnContent}</button>
           </div>
           <div id="info" className="col-md-6">
@@ -204,22 +235,59 @@ class ProductDetails extends React.Component{
             <input type="submit" className="customBtn" />
           </form>
         </div>
+        <div id="info" className={this.state.loadingStateStyle}>
+              <div className="spinner-border" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+              <h3>Loading, please wait...</h3>
+            </div>
       </div>
     );
   }
 
   onBuyCrop = () => {
-    if(this.state.buyBtnContent === 'Buy') {
-      this.setState({
-        reviewFormStyle: 'row content display-block'
-      });
-      // set the buyer details in the database
-      firebase.database().ref('product/' + this.state.productID).update({
-        buyerEmail: this.state.userEmail,
-        buyerName: this.state.userName
-      });
-      alert("Order successful!\nPlease make sure you review the farmer!");
-    } else {
+    if(this.state.buyBtnContent === 'Add to cart') {
+      // this.setState({
+      //   reviewFormStyle: 'row content display-block'
+      // });
+      // update cart in the db
+      let userDbObj = firebase.database().ref('user/' + this.state.userPh);
+      let cartObj = userDbObj.child('cart');
+      let productExists = false;
+      let productFlag = true;
+      // check if the item already exists in the cart
+      cartObj.get().then((cartObjSnapshot) => {
+        cartObjSnapshot.forEach((cartObjSnap) => {
+          if(productFlag && cartObjSnap.val().productID === this.state.productID) {
+            productExists = true;
+            productFlag = false;
+          }
+        })
+        // if item exists in cart, inform the user.
+        if(productExists) {
+          alert(`${this.state.crop} sold by ${this.state.farmerName} already exists in your cart.`)
+        } else {
+          // if item doesn't exist in the cart, add it.
+          let cartItem = cartObj.push();
+          cartItem.update({
+            crop: this.state.crop,
+            price: this.state.price,
+            productID: this.state.productID
+          });
+          alert("Added to cart.");
+        }
+        this.setState({
+          buyBtnContent: (
+            <div>
+              <i className="fas fa-check"></i> Added to cart
+            </div>
+          )
+        });
+        document.getElementById('btn').disabled = true;
+      })
+    } 
+    
+    if(document.getElementById('btn').textContent.includes('Bid')) {
       let currentTime = Date.now();
       let bidShouldEnd = currentTime + 3600000; // provide 1 hour time for each bid
       firebase.database().ref('product/' + this.props.match.params.id).update({
