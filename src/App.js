@@ -12,7 +12,8 @@ class App extends React.Component {
 
   state = {
     userName: '',
-    userDisplay: "display-none"
+    userDisplay: "display-none",
+    userImgUrl: ''
   }
 
   componentDidMount() {
@@ -20,6 +21,7 @@ class App extends React.Component {
       if(user) {
         this.setState({
           userName: user.displayName,
+          userImgUrl: user.photoURL,
           userDisplay: "display-block dropdown"
         })
       } else {
@@ -38,17 +40,14 @@ class App extends React.Component {
             <div id="highlight" className="row">
               <div className="navbar navbar-expand-lg navbar-light">
                 <div className="container-fluid">
-                  <Link to="/home" className="navbar-brand cursor-pointer"><img src="./images/logo.png" alt="Krishi Mart logo" width="64" height="64" /></Link>
-                  <button className="navbar-toggler customBtn" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span className="navbar-toggler-icon"></span>
+                  <button style={{border: '0px'}} className="navbar-toggler customBtn" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <i className="fas fa-bars" style={{fontSize: '1.5rem'}}></i>
                   </button>
+                  <Link to="/home" className="navbar-brand cursor-pointer"><img src="./images/logo.png" alt="Krishi Mart logo" width="64" height="64" /></Link>
                   <div className="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
                     <form className="d-flex">
                       <div className="d-flex align-items-center">  
                         <ul style={{display: 'inline'}, {listStyle: 'none'}} className="navbar-nav align-items-center">
-                          <li style={{fontSize: '1.5rem', color: '#49A078', margin: 'auto 20px'}} title="My Cart">
-                            <i className="fas fa-shopping-cart cursor-pointer"></i>
-                          </li>
                           <li style={{display: 'inline'}}>
                             <div id="google_translate_element">
                               <span className="nav-link cursor-pointer">Please select a language</span>
@@ -57,7 +56,7 @@ class App extends React.Component {
                           <li style={{display: 'inline'}}>
                             <div className={this.state.userDisplay}>
                               <span className="nav-link dropdown-toggle cursor-pointer" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">                    
-                                <i className="far fa-user"></i>
+                                <img src={this.state.userImgUrl} width="32" height="32" style={{borderRadius: '50%', verticalAlign: 'middle'}} alt="User Profile" />
                                 <span> {this.state.userName}</span>
                               </span>
                               <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -70,6 +69,9 @@ class App extends React.Component {
                       </div>
                     </form>
                   </div>
+                  <span style={{fontSize: '1.5rem', color: '#49A078', margin: 'auto 20px'}} title="My Cart">
+                    <i className="fas fa-shopping-cart cursor-pointer"></i>
+                  </span>
                 </div>
               </div>
             </div>

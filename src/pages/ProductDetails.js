@@ -107,14 +107,9 @@ class ProductDetails extends React.Component{
                 let cartItemKey = Object.keys(u.cart).toString();
                 if(u.cart[cartItemKey].productID === this.state.productID) {
                   this.setState({
-                    buyBtnContent: (
-                      <div>
-                        <i className="fas fa-check"></i> Added to cart
-                      </div>
-                    )
+                    buyBtnStyle: 'display-none'
                   });
-                  document.getElementById("btn").disabled = true;
-                  document.getElementById("btn").classList.add('cursor-disabled');
+                  document.getElementById("product-alert").classList.remove('display-none');
                 }
                 break;
               }
@@ -200,6 +195,11 @@ class ProductDetails extends React.Component{
     })
     return(
       <div id="product-details" className={this.state.pageStyle} style={{fontSize: '1.25em'}}>
+        <div id="product-alert" className="display-none">
+          <div id="highlight" className="alert alert-success" role="alert">
+            <i className="fas fa-check"></i> {this.state.crop} was added to your cart
+          </div>
+        </div>
         <div className={this.state.productStateStyle}>
           <div id="info" className="col-md-6">
             <h2 id="highlight">{this.state.crop}</h2>
@@ -214,7 +214,7 @@ class ProductDetails extends React.Component{
           <div id="info" className="col-md-6">
             <h3 className="content" id="highlight">Top reviews about {this.state.farmerName}'s products</h3>
             {
-              review.map((rev, pos) => {
+              review.length ? review.map((rev, pos) => {
                 return(
                   <div key={pos}>
                     <p>{rev.buyerName ? rev.buyerName : "A user"} says "{rev.buyerReview}"</p>
@@ -222,7 +222,7 @@ class ProductDetails extends React.Component{
                     <br />
                   </div>
                 )
-              })
+              }) : <p className="content">Sorry, we couldn't find any reviews...</p>
             }
           </div>
         </div>
