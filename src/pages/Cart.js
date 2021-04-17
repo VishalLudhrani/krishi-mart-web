@@ -55,7 +55,7 @@ class Cart extends React.Component {
 						let productsArray = [];
 						let productKeysArray = [];
 						for(let cartItem of cartItems) {
-							productRef.child(cartItem.productID).on('value', (productSnapshot) => {
+							productRef.child(cartItem.productID).once('value').then((productSnapshot) => {
 								productsArray.push(productSnapshot.val());
 								productKeysArray.push(productSnapshot.key);
 								this.setState({
@@ -94,8 +94,9 @@ class Cart extends React.Component {
 						<div id="info" key={pos}>
 							<hr />
 							<h2 id="highlight">{product.crop}</h2>
-							<p>Sold By {product.farmerName} at Rs. {product.price}/Kg</p>
+							<p>Sold By {product.farmerName} at &#8377;{product.price}/Kg</p>
 							<p>Quantity: {product.quantity_kg} Kg</p>
+							<p>Total amount: &#8377;{product.quantity_kg*product.price}</p>
 							<h4 id="highlight">Please select your purchase method</h4>
 							<div onChange={this.handlePurchase}>
 								<input name="purchase" type="radio" value="delivery" /> Home Delivery
@@ -136,7 +137,6 @@ class Cart extends React.Component {
 		let itemsLength = this.state.products.length;
 		let productID = this.state.productsKeys[productPosition];
 		let cartArray = Object.entries(this.state.userCart);
-		let itemsPosition = itemsLength - productPosition - 1;
 		const currentTimestamp = Date.now();
 		// update user details on the product db
 		firebase.database().ref('product/' + productID).update({
@@ -149,9 +149,9 @@ class Cart extends React.Component {
 				alert(`An error occured.\n${error}`)
 			} else {
 				// delete item from user's cart
-				this.deleteProduct(this.state.userPh, cartArray[itemsPosition][0]);
-				alert("Your purchase was successful.\nPlease add a review for our farmer!");
-				this.props.history.push('/product/' + productID);
+				this.deleteProduct(this.state.userPh, cartArray[productPosition][0]);
+				alert("Your purchase was successful.");
+				this.props.history.push('user-profile');
 			}
 		})
 	}

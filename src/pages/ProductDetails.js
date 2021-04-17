@@ -67,7 +67,9 @@ class ProductDetails extends React.Component{
               reviewFormStyle: 'display-block',
               buyBtnStyle: 'display-none'
             })
-            document.getElementById('product-bought-alert').classList.remove('display-none');
+            if(document.getElementById('product-brought-alert')) {
+              document.getElementById('product-bought-alert').classList.remove('display-none');
+            }
           }
           if(doc.val().review) {
             this.setState({reviewFormStyle: 'display-none'});
@@ -99,7 +101,7 @@ class ProductDetails extends React.Component{
           userEmail: user.email,
           userName: user.displayName
         })
-        firebase.database().ref('user/').on('value', (snapshot) => {
+        firebase.database().ref('user/').once('value').then((snapshot) => {
           let userdb = [];
           if(snapshot.exists()) {
             snapshot.forEach((doc) => {
@@ -111,7 +113,7 @@ class ProductDetails extends React.Component{
                 break;
               }
               if(u.category === 'consumer' && u.email === user.email) {
-                firebase.database().ref('product/' + this.state.productID).on('value', (productSnapshot) => {
+                firebase.database().ref('product/' + this.state.productID).once('value').then((productSnapshot) => {
                   if(!(productSnapshot.val().buyerEmail === user.email)) {
                     this.setState({
                       buyBtnStyle: 'display-block customBtn',
@@ -120,12 +122,15 @@ class ProductDetails extends React.Component{
                   }
                 })
                 if(u.cart) {
-                  let cartItemKey = Object.keys(u.cart).toString();
-                  if(u.cart[cartItemKey].productID === this.state.productID) {
-                    this.setState({
-                      buyBtnStyle: 'display-none'
-                    });
-                    document.getElementById("product-alert").classList.remove('display-none');
+                  let cartItemKeys = Object.keys(u.cart);
+                  for(let cartItemKey of cartItemKeys) {
+                    if(u.cart[cartItemKey].productID === this.state.productID) {
+                      this.setState({
+                        buyBtnStyle: 'display-none'
+                      });
+                      document.getElementById("product-alert").classList.remove('display-none');
+                      break;
+                    }
                   }
                 }
                 break;
@@ -224,22 +229,22 @@ class ProductDetails extends React.Component{
         </div>
         <div className={this.state.productStateStyle}>
           <div id="info" className="col-md-6">
-            <h2 id="highlight">{this.state.crop}</h2>
-            <p>Sold by {this.state.farmerName}</p>
-            <p>Quantity: {this.state.quantity_kg} Kg</p>
-            <p>{this.state.cropCategory} Rs. {this.state.price}/Kg</p>
+            <h1 id="highlight">{this.state.crop}</h1>
+            <p><strong>Sold by</strong> {this.state.farmerName}</p>
+            <p><strong>Quantity:</strong> {this.state.quantity_kg} Kg</p>
+            <p><strong>{this.state.cropCategory}</strong> &#8377; {this.state.price}/Kg</p>
             <p>{this.state.bidStatus}</p>
             <p>{this.state.buyingStatus}</p>
             <p>{reviewPositivity ? reviewPositivity : "Insufficient data for"} % positive reviews</p>
             <button id="btn" className={this.state.buyBtnStyle} style={{borderRadius: '14px'}} onClick={this.onBuyCrop}>{this.state.buyBtnContent}</button>
           </div>
           <div id="info" className="col-md-6">
-            <h3 className="content" id="highlight">Top reviews about {this.state.farmerName}'s products</h3>
+            <h1 className="content" id="highlight">Top reviews about {this.state.farmerName}'s products</h1>
             {
               review.length ? review.map((rev, pos) => {
                 return(
                   <div key={pos}>
-                    <p>{rev.buyerName ? rev.buyerName : "A user"} says "{rev.buyerReview}"</p>
+                    <p><strong>{rev.buyerName ? rev.buyerName : "A user"}</strong> says "{rev.buyerReview}"</p>
                     <hr />
                     <br />
                   </div>
@@ -249,7 +254,7 @@ class ProductDetails extends React.Component{
           </div>
         </div>
         <div id="info" className={this.state.reviewFormStyle} style={{marginTop: '5%'}}>
-          <h3 id="highlight">Please leave a review for {this.state.farmerName}!</h3>
+          <h1 id="highlight">Please leave a review for {this.state.farmerName}!</h1>
           <form onSubmit={this.onReviewSubmit}>
             <textarea style={{width: '100%', height: 'auto'}} value={this.state.review} onChange={this.handleReviewChange} placeholder="example: Fresh quality"></textarea>
             <br />

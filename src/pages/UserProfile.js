@@ -16,7 +16,9 @@ class UserProfile extends React.Component {
 		pageStyle: 'row',
 		products: [],
 		userCategory: '',
-		purchaseHistoryStyle: ''
+		purchaseHistoryStyle: '',
+		productsKeys: [],
+		userPhotoUrl: ''
 	}
 
 	componentDidMount() {
@@ -29,7 +31,8 @@ class UserProfile extends React.Component {
 				this.setState({
 					userName: user.displayName,
 					email: user.email,
-					dataStatus: ''
+					dataStatus: '',
+					userPhotoUrl: user.photoURL
 				})
 				firebase.database().ref('user/').on('value', (snapshot) => {
 					let loggedInUser;
@@ -50,12 +53,17 @@ class UserProfile extends React.Component {
 				})
 				firebase.database().ref('product/').on('value', (snapshot) => {
 					let product = [];
+					let productKeys = [];
 					snapshot.forEach((doc) => {
 						if(doc.val().buyerEmail === this.state.email) {
 							product = product.concat(doc.val());
+							productKeys = productKeys.concat(doc.key);
 						}
 					});
-					this.setState({products: product});
+					this.setState({
+						products: product,
+						productsKeys: productKeys
+					});
 				})
 			} else {
 				this.setState({
@@ -84,7 +92,7 @@ class UserProfile extends React.Component {
 			<div>
 				<div id="product-details" className={this.state.pageStyle}>
 					<div className="col-sm-4">
-						<i className="far fa-user" style={{fontSize: '10rem'}}></i>
+						<img src={this.state.userPhotoUrl} style={{borderRadius: '50%', width: '50%', height: 'auto'}} />
 					</div>
 					<div className="col-sm-8" style={{padding: '10px'}}>
 						<p>{this.state.userName}</p>
@@ -103,11 +111,15 @@ class UserProfile extends React.Component {
 							{
 								this.state.products.map((product, pos) => {
 									return(
-										<div>
+										<div id="info" key={pos} onClick={() => this.onVisitProduct(pos)} className="cursor-pointer">
 											<p>Crop: {product.crop}</p>
 											<p>Quantity: {product.quantity_kg} Kg</p>
 											<p>Price: {product.price}/Kg</p>
 											<p>Sold by: {product.farmerName} ({product.farmerEmail})</p>
+											<p>Amount Paid: &#8377;{product.quantity_kg * product.price}</p>
+											<div>
+												{product.review ? <p></p> : <p className="alert alert-warning" role="alert">Dear user, reviewing this product is pending.<br />Click here to add a review</p>}
+											</div>
 											<hr />
 										</div>
 									)
@@ -130,6 +142,10 @@ class UserProfile extends React.Component {
 
 	onEditProfile = () => {
 		this.props.history.push('/update-profile')
+	}
+
+	onVisitProduct = (position) => {
+		this.props.history.push('/product/' + this.state.productsKeys[position]);
 	}
 
 }

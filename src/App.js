@@ -44,7 +44,7 @@ class App extends React.Component {
                   <button style={{border: '0px'}} className="navbar-toggler customBtn" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <i className="fas fa-bars" style={{fontSize: '1.5rem'}}></i>
                   </button>
-                  <Link to="/home" className="navbar-brand cursor-pointer"><img src="./images/logo.png" alt="logo" width="64" height="64" style={{marginLeft: '24px'}} /></Link>
+                  <Link to="/home" className="navbar-brand cursor-pointer"><img src={process.env.PUBLIC_URL + '/images/logo.png'} alt="logo" width="64" height="64" style={{marginLeft: '24px'}} /></Link>
                   <div className="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
                     <form className="d-flex">
                       <div className="d-flex align-items-center">  
