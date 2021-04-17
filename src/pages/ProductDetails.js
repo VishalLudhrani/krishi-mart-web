@@ -60,8 +60,19 @@ class ProductDetails extends React.Component{
           buyBtnContent: 'Add to cart'
         });
         if(doc.val().buyerName) {
+          if(doc.val().buyerEmail === this.state.userEmail) {
+            let timeObj = new Date(doc.val().purchaseTime);
+            this.setState({
+              buyingStatus: `You bought ${doc.val().crop} on ${timeObj.toLocaleDateString()} at ${timeObj.toLocaleTimeString()}`,
+              reviewFormStyle: 'display-block',
+              buyBtnStyle: 'display-none'
+            })
+            document.getElementById('product-bought-alert').classList.remove('display-none');
+          }
+          if(doc.val().review) {
+            this.setState({reviewFormStyle: 'display-none'});
+          }
           this.setState({
-            buyingStatus: `Bought by ${doc.val().buyerName}`,
             buyerEmail: doc.val().buyerEmail,
             buyerName: doc.val().buyerName
           })
@@ -100,16 +111,22 @@ class ProductDetails extends React.Component{
                 break;
               }
               if(u.category === 'consumer' && u.email === user.email) {
-                this.setState({
-                  buyBtnStyle: 'display-block customBtn',
-                  userPh: u.phNo
-                });
-                let cartItemKey = Object.keys(u.cart).toString();
-                if(u.cart[cartItemKey].productID === this.state.productID) {
-                  this.setState({
-                    buyBtnStyle: 'display-none'
-                  });
-                  document.getElementById("product-alert").classList.remove('display-none');
+                firebase.database().ref('product/' + this.state.productID).on('value', (productSnapshot) => {
+                  if(!(productSnapshot.val().buyerEmail === user.email)) {
+                    this.setState({
+                      buyBtnStyle: 'display-block customBtn',
+                      userPh: u.phNo
+                    });
+                  }
+                })
+                if(u.cart) {
+                  let cartItemKey = Object.keys(u.cart).toString();
+                  if(u.cart[cartItemKey].productID === this.state.productID) {
+                    this.setState({
+                      buyBtnStyle: 'display-none'
+                    });
+                    document.getElementById("product-alert").classList.remove('display-none');
+                  }
                 }
                 break;
               }
@@ -198,6 +215,11 @@ class ProductDetails extends React.Component{
         <div id="product-alert" className="display-none">
           <div id="highlight" className="alert alert-success" role="alert">
             <i className="fas fa-check"></i> {this.state.crop} was added to your cart
+          </div>
+        </div>
+        <div id="product-bought-alert" className="display-none">
+          <div id="highlight" className="alert alert-success" role="alert">
+            <i className="fas fa-check"></i> Your order for {this.state.crop} was completed.
           </div>
         </div>
         <div className={this.state.productStateStyle}>

@@ -6,7 +6,8 @@ import Home from './pages/Home';
 import EditUser from './pages/EditUser';
 import ProductDetails from './pages/ProductDetails';
 import UserProfile from './pages/UserProfile';
-import AddCrop from './pages/AddCrop'
+import AddCrop from './pages/AddCrop';
+import Cart from './pages/Cart';
 
 class App extends React.Component {
 
@@ -43,7 +44,7 @@ class App extends React.Component {
                   <button style={{border: '0px'}} className="navbar-toggler customBtn" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <i className="fas fa-bars" style={{fontSize: '1.5rem'}}></i>
                   </button>
-                  <Link to="/home" className="navbar-brand cursor-pointer"><img src="./images/logo.png" alt="Krishi Mart logo" width="64" height="64" /></Link>
+                  <Link to="/home" className="navbar-brand cursor-pointer"><img src="./images/logo.png" alt="logo" width="64" height="64" style={{marginLeft: '24px'}} /></Link>
                   <div className="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
                     <form className="d-flex">
                       <div className="d-flex align-items-center">  
@@ -53,10 +54,10 @@ class App extends React.Component {
                               <span className="nav-link cursor-pointer">Please select a language</span>
                             </div>
                           </li>
-                          <li style={{display: 'inline'}}>
+                          <li style={{display: 'inline'}} className="nav-item">
                             <div className={this.state.userDisplay}>
                               <span className="nav-link dropdown-toggle cursor-pointer" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">                    
-                                <img src={this.state.userImgUrl} width="32" height="32" style={{borderRadius: '50%', verticalAlign: 'middle'}} alt="User Profile" />
+                                <img src={this.state.userImgUrl} width="32" height="32" style={{borderRadius: '50%'}} alt="User Profile" />
                                 <span> {this.state.userName}</span>
                               </span>
                               <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -70,18 +71,19 @@ class App extends React.Component {
                     </form>
                   </div>
                   <span style={{fontSize: '1.5rem', color: '#49A078', margin: 'auto 20px'}} title="My Cart">
-                    <i className="fas fa-shopping-cart cursor-pointer"></i>
+                    <Link style={{color: '#49A078', textDecoration: 'none'}} to='/cart'><i className="fas fa-shopping-cart cursor-pointer"></i></Link>
                   </span>
                 </div>
               </div>
             </div>
           </strong>
           <Route path="/" exact component={Home} />
-          <Route path="/home" exact component={Home} />
+          <Route path="/home" component={Home} />
           <Route path="/update-profile" exact component={EditUser} />
           <Route path="/product/:id" exact component={ProductDetails} />
           <Route path="/user-profile" exact component={UserProfile} />
           <Route path="/add-crop" exact component={AddCrop} />
+          <Route path="/cart" exact component={Cart} />
         </BrowserRouter>
       </div>
     );
