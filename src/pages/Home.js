@@ -234,7 +234,7 @@ class Home extends React.Component {
               </div>
             </div>
             <div className={this.state.logoutStyle}>
-              <button className="btn btn-outline-success" type="button" style={{width: '75%', margin: '10px auto'}}><Link to="/add-crop" style={{textDecoration: 'none', color: '#49A078'}}>Add Crop</Link></button>
+              <button className="btn btn-outline-success" type="button" style={{width: '75%', margin: '10px auto'}} onClick={this.onAddCrop}>Add Crop</button>
               <br />
               <div id="highlight" className="container">
                 {this.state.cropsContent}
@@ -245,6 +245,10 @@ class Home extends React.Component {
       }
     }
     return displayContent;
+  }
+
+  onAddCrop = () => {
+    this.props.history.push('/add-crop');
   }
 
   formStyle = (e) => {

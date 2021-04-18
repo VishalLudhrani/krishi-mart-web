@@ -78,7 +78,7 @@ class App extends React.Component {
             </div>
           </strong>
           <Route path="/" exact component={Home} />
-          <Route path="/home" component={Home} />
+          <Route path="/home" exact component={Home} />
           <Route path="/update-profile" exact component={EditUser} />
           <Route path="/product/:id" exact component={ProductDetails} />
           <Route path="/user-profile" exact component={UserProfile} />
