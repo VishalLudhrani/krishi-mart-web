@@ -3,6 +3,7 @@ import firebase from 'firebase';
 import { withRouter } from 'react-router-dom';
 
 const mql = window.matchMedia("screen and (max-width: 576px)");
+const currentTimestamp = Date.now();
 
 class UserProfile extends React.Component {
 	
@@ -110,7 +111,19 @@ class UserProfile extends React.Component {
 						<div>
 							{
 								this.state.products.map((product, pos) => {
-									return(
+									return product.bidEnds ? product.bidEnds<=currentTimestamp ? (
+										<div id="info" key={pos} onClick={() => this.onVisitProduct(pos)} className="cursor-pointer">
+											<p>Crop: {product.crop}</p>
+											<p>Quantity: {product.quantity_kg} Kg</p>
+											<p>Price: {product.price}/Kg</p>
+											<p>Sold by: {product.farmerName} ({product.farmerEmail})</p>
+											<p>Amount Paid: &#8377;{product.quantity_kg * product.price}</p>
+											<div>
+												{product.review ? <p></p> : <p className="alert alert-warning" role="alert">Dear user, reviewing this product is pending.<br />Click here to add a review</p>}
+											</div>
+											<hr />
+										</div>
+									) : <p></p> : (
 										<div id="info" key={pos} onClick={() => this.onVisitProduct(pos)} className="cursor-pointer">
 											<p>Crop: {product.crop}</p>
 											<p>Quantity: {product.quantity_kg} Kg</p>

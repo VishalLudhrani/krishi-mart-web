@@ -31,7 +31,9 @@ class ProductDetails extends React.Component{
     userEmail: '',
     userPh: '',
     loadingStateStyle: 'display-block text-center',
-    productStateStyle: 'display-none'
+    productStateStyle: 'display-none',
+    purchaseMethod: '',
+    purchaseMethodStyle: 'display-none'
   }
 
   componentDidMount() {
@@ -98,8 +100,14 @@ class ProductDetails extends React.Component{
                 <span>
                   <strong>Bought by:</strong> {doc.val().buyerName}
                 </span>
-              )
+              ),
+              buyBtnStyle: 'display-none'
             })
+            if(doc.val().buyerEmail === this.state.userEmail) {
+              if(document.getElementById('product-bought-alert')) {
+                document.getElementById('product-bought-alert').classList.remove('display-none');
+              }
+            }
           }
         } else {
           this.setState({
@@ -165,12 +173,13 @@ class ProductDetails extends React.Component{
           if(productSnapshot.val().bidEnds >= currentTimestamp) {
             //    if existing user's bid is present, disable bidding
             if(this.state.userEmail === productSnapshot.val().buyerEmail) {
-              document.querySelector('#btn').disabled = true;
               this.setState({
                 buyBtnContent: '',
-                buyBtnStyle: 'display-none'
-              })
-              document.getElementById('product-bid-alert').classList.remove('display-none');
+                buyBtnStyle: 'display-none',
+              });
+              if(document.getElementById('product-bid-alert')) {
+                document.getElementById('product-bid-alert').classList.remove('display-none');
+              }
             } else {
               //    else increase the bid by 10 rupees and update the amount on button, reflect it on the database as well on button click
               document.querySelector('#btn').disabled = false;
@@ -197,7 +206,19 @@ class ProductDetails extends React.Component{
                   <strong>Bid ended at</strong> {new Date(productSnapshot.val().bidEnds).toLocaleString()}
                 </span>
               ),
-            })
+            });
+            if(productSnapshot.val().buyerEmail === this.state.userEmail) {
+              if(!productSnapshot.val().review) {
+                this.setState({
+                  reviewFormStyle: 'display-block'
+                })
+              }
+              if(!productSnapshot.val().purchaseMethod) {
+                this.setState({
+                  purchaseMethodStyle: 'display-block'
+                })
+              }
+            }
           }
         }
         if(!(productSnapshot.val().bidEnds)) {
@@ -283,7 +304,7 @@ class ProductDetails extends React.Component{
             }
           </div>
         </div>
-        <div id="info" className={this.state.reviewFormStyle} style={{marginTop: '5%'}}>
+        <div id="info" className={this.state.reviewFormStyle} style={{marginTop: '5%', padding: '1%'}}>
           <h1 id="highlight">Please leave a review for {this.state.farmerName}!</h1>
           <form onSubmit={this.onReviewSubmit}>
             <textarea style={{width: '100%', height: 'auto'}} value={this.state.review} onChange={this.handleReviewChange} placeholder="example: Fresh quality"></textarea>
@@ -293,11 +314,20 @@ class ProductDetails extends React.Component{
           </form>
         </div>
         <div id="info" className={this.state.loadingStateStyle}>
-              <div className="spinner-border" role="status">
-                <span className="visually-hidden">Loading...</span>
-              </div>
-              <h3>Loading, please wait...</h3>
-            </div>
+          <div className="spinner-border" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+          <h3>Loading, please wait...</h3>
+        </div>
+        <div id="info" className={this.state.purchaseMethodStyle}>
+          <h1 id="highlight">Please select your purchase method</h1>
+          <div onChange={this.handlePurchase}>
+            <input name="purchase" type="radio" value="delivery" /> Home Delivery
+            <br />
+            <input name="purchase" type="radio" value="pickup" /> Pick up at Farmer's place
+          </div>
+          <button className="customBtn" style={{borderRadius: '10px', margin: '10px'}} onClick={this.onPurchaseMethodSubmit}>Submit</button>
+        </div>
       </div>
     );
   }
@@ -406,6 +436,27 @@ class ProductDetails extends React.Component{
       }
     }
   }
+
+  handlePurchase = (e) => {
+    this.setState({purchaseMethod: e.target.value});
+  }
+
+  onPurchaseMethodSubmit = () => {
+    this.setState({
+      purchaseMethodStyle: 'display-none'
+    })
+    firebase.database().ref('product/' + this.state.productID).update({
+      purchaseMethod: this.state.purchaseMethod
+    }, (error) => {
+      if(error) {
+        alert(`Oops, there was an error\n${error}`);
+      } else {
+        alert("Your purchase method was accepted.\nYou may check your purchase history in your profile.\nThank you for shopping with us! 😇");
+        this.props.history.push('/user-profile');
+      }
+    })
+  }
+
 }
 
 export default withRouter(ProductDetails);
