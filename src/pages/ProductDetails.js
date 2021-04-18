@@ -90,6 +90,7 @@ class ProductDetails extends React.Component{
             ),
             buyerEmail: doc.val().buyerEmail,
             buyerName: doc.val().buyerName,
+            buyBtnStyle: 'display-block customBtn'
           })
           if(doc.val().bidEnds < currentTimestamp) {
             this.setState({
