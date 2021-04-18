@@ -83,13 +83,26 @@ class ProductDetails extends React.Component{
         if(doc.val().buyerName) {
           this.setState({
             cropCategory: 'Current bid at',
-            buyingStatus: `Current bid by ${doc.val().buyerName}`,
+            buyingStatus: (
+              <span>
+                <strong>Current bid by</strong> {doc.val().buyerName}
+              </span>
+            ),
             buyerEmail: doc.val().buyerEmail,
             buyerName: doc.val().buyerName,
           })
+          if(doc.val().bidEnds < currentTimestamp) {
+            this.setState({
+              buyingStatus: (
+                <span>
+                  <strong>Bought by:</strong> {doc.val().buyerName}
+                </span>
+              )
+            })
+          }
         } else {
           this.setState({
-            cropCategory: 'Bid starts at',
+            cropCategory: (<strong>Bid starts at</strong>),
           })
         }
       }
@@ -115,10 +128,12 @@ class ProductDetails extends React.Component{
               if(u.category === 'consumer' && u.email === user.email) {
                 firebase.database().ref('product/' + this.state.productID).once('value').then((productSnapshot) => {
                   if(!(productSnapshot.val().buyerEmail === user.email)) {
-                    this.setState({
-                      buyBtnStyle: 'display-block customBtn',
-                      userPh: u.phNo
-                    });
+                    if(!(productSnapshot.val().buyerEmail)) {
+                      this.setState({
+                        buyBtnStyle: 'display-block customBtn',
+                        userPh: u.phNo
+                      });
+                    }
                   }
                 })
                 if(u.cart) {
@@ -154,6 +169,7 @@ class ProductDetails extends React.Component{
                 buyBtnContent: '',
                 buyBtnStyle: 'display-none'
               })
+              document.getElementById('product-bid-alert').classList.remove('display-none');
             } else {
               //    else increase the bid by 10 rupees and update the amount on button, reflect it on the database as well on button click
               document.querySelector('#btn').disabled = false;
@@ -165,13 +181,21 @@ class ProductDetails extends React.Component{
               })
             }
             this.setState({
-              bidStatus: `Bid ends at ${new Date(productSnapshot.val().bidEnds).toLocaleString()}`,
+              bidStatus: (
+                <span>
+                  <strong>Bid ends at</strong> {new Date(productSnapshot.val().bidEnds).toLocaleString()}
+                </span>
+              ),
             })
           } else {
             // else close the bid
             document.querySelector('#btn').disabled = true;
             this.setState({
-              bidStatus: `Bid ended at ${new Date(productSnapshot.val().bidEnds).toLocaleString()}`,
+              bidStatus: (
+                <span>
+                  <strong>Bid ended at</strong> {new Date(productSnapshot.val().bidEnds).toLocaleString()}
+                </span>
+              ),
             })
           }
         }
@@ -227,6 +251,11 @@ class ProductDetails extends React.Component{
             <i className="fas fa-check"></i> Your order for {this.state.crop} was completed.
           </div>
         </div>
+        <div id="product-bid-alert" className="display-none">
+          <div id="highlight" className="alert alert-success" role="alert">
+            <i className="fas fa-check"></i> Your bid for {this.state.crop} was placed.
+          </div>
+        </div>
         <div className={this.state.productStateStyle}>
           <div id="info" className="col-md-6">
             <h1 id="highlight">{this.state.crop}</h1>
@@ -235,7 +264,7 @@ class ProductDetails extends React.Component{
             <p><strong>{this.state.cropCategory}</strong> &#8377; {this.state.price}/Kg</p>
             <p>{this.state.bidStatus}</p>
             <p>{this.state.buyingStatus}</p>
-            <p>{reviewPositivity ? reviewPositivity : "Insufficient data for"} % positive reviews</p>
+            <p><strong>{reviewPositivity ? reviewPositivity : "Insufficient data for"} %</strong> positive reviews</p>
             <button id="btn" className={this.state.buyBtnStyle} style={{borderRadius: '14px'}} onClick={this.onBuyCrop}>{this.state.buyBtnContent}</button>
           </div>
           <div id="info" className="col-md-6">
@@ -323,16 +352,26 @@ class ProductDetails extends React.Component{
        buyerName: this.state.userName,
        bidEnds: bidShouldEnd
      })
-     firebase.database().ref('user/').on('value', (userSnapshot) => {
-       userSnapshot.forEach((user) => {
-         if(user.email === this.state.farmerEmail) {
-           firebase.database().ref('user/' + user.phNo).update({
-             percentPositiveReview: reviewPositivity
-           })
-         }
+     this.setState({
+      buyBtnContent: (
+        <div>
+          <i className="fas fa-check"></i> Bid of &#8377; {this.state.price} placed
+        </div>
+      )
+    });
+     if(reviewPositivity) {
+       firebase.database().ref('user/').on('value', (userSnapshot) => {
+         userSnapshot.forEach((user) => {
+           if(user.email === this.state.farmerEmail) {
+             firebase.database().ref('user/' + user.phNo).update({
+               percentPositiveReview: reviewPositivity
+             })
+           }
+         })
        })
-     })
-     this.props.history.push('/user-profile')
+     }
+     alert(`Your bid for ${this.state.crop} was placed at Rs. ${this.state.price}`);
+     window.location.reload();
     }
   }
 
