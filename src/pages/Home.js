@@ -1,6 +1,6 @@
 import React from 'react';
 import firebase from 'firebase';
-import { Link, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import ProductItem from './ProductItem';
 
 const vader = require('vader-sentiment');
@@ -8,8 +8,14 @@ const mql = window.matchMedia("screen and (max-width: 576px)");
 
 class Home extends React.Component {
   state = {
-    loggedInUser: '',
-    loggedInUserCategory: '',
+    user: {
+      name: '',
+      email: '',
+      phNo: null,
+      uID: '',
+      photoURL: '',
+      category: ''
+    },
     loginStyle: '',
     logoutStyle: '',
     products: [],
@@ -37,7 +43,12 @@ class Home extends React.Component {
       if (user) {
         // User is signed in.
         this.setState({
-          loggedInUser: user.displayName,
+          user:{
+            name: user.displayName,
+            email: user.email,
+            phNo: user.phoneNumber,
+            uID: user.uid
+          },
           // change the style for login element,
           loginStyle: "display-none",
           logoutStyle: "display-block row",
@@ -52,7 +63,10 @@ class Home extends React.Component {
           for(let u of userdb) {
             if(u.category === 'farmer' && u.email === user.email) {
               this.setState({
-                loggedInUserCategory: 'farmer',
+                user: {
+                  ...this.state.user,
+                  category: 'farmer'
+                },
                 isLoading: false
               });
               // logged in user is farmer
@@ -108,7 +122,10 @@ class Home extends React.Component {
             }
             if(u.category === 'consumer' && u.email === user.email) {
               this.setState({
-                loggedInUserCategory: 'consumer',
+                user:{
+                  ...this.state.user,
+                  category: 'consumer'
+                },
                 isLoading: false
               });
               // logged in user is a consumer
@@ -175,7 +192,7 @@ class Home extends React.Component {
         </div>
       )
     } else {
-      if(this.state.loggedInUserCategory === 'consumer') {
+      if(this.state.user.category === 'consumer') {
         displayContent = (
           <div>
             <div className={this.state.loginStyle}>
