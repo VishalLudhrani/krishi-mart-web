@@ -162,3 +162,16 @@ input[type="submit"] {
   cursor: not-allowed;
   background: #A2BDAD;
 }
+
+.navbar-nav li {
+  display: inline;
+}
+
+ul.navbar-nav {
+  display: flex;
+  list-style: none;
+}
+
+#highlight.row {
+  font-weight: 600;
+}
