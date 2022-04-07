@@ -1,22 +1,20 @@
-import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import firebase from 'firebase/app';
 import App from './App';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyD3MGgUJSNu2iK8N15mSWR7Z5m5PR8ni2Q",
-  authDomain: "krishi-mart.firebaseapp.com",
-  databaseURL: "https://krishi-mart.firebaseio.com",
-  projectId: "krishi-mart",
-  storageBucket: "krishi-mart.appspot.com",
-  messagingSenderId: "722368381376",
-  appId: "1:722368381376:web:ef80038e911390aa520825",
-  measurementId: "G-Q4W6LKPREC"
+  apiKey: process.env.REACT_APP_API_KEY,
+  authDomain: process.env.REACT_APP_AUTH_DOMAIN,
+  databaseURL: process.env.REACT_APP_DB_URL,
+  projectId: process.env.REACT_APP_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_APP_ID,
+  measurementId: process.env.REACT_APP_MEASUREMENT_ID,
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
-firebase.analytics();
 
 let root = document.getElementById('root');
-ReactDOM.render(<App />,root);
+ReactDOM.render(<App />, root);

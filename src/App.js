@@ -2,11 +2,6 @@ import React from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
 import './App.css';
 import Home from './components/Home/Home';
-import EditUser from './pages/EditUser';
-import ProductDetails from './pages/ProductDetails';
-import UserProfile from './pages/UserProfile';
-import AddCrop from './pages/AddCrop';
-import Cart from './pages/Cart';
 import Navbar from './components/Navbar';
 
 const App = () => {
@@ -14,13 +9,12 @@ const App = () => {
     <div className="container">
       <BrowserRouter>
         <Navbar />
-        <Route path="/" exact component={Home} />
-        <Route path="/home" exact component={Home} />
-        <Route path="/update-profile" exact component={EditUser} />
-        <Route path="/product/:id" exact component={ProductDetails} />
-        <Route path="/user-profile" exact component={UserProfile} />
-        <Route path="/add-crop" exact component={AddCrop} />
-        <Route path="/cart" exact component={Cart} />
+        <Route path="/" exact>
+          <Home />
+        </Route>
+        <Route path="/home">
+          <Home />
+        </Route>
       </BrowserRouter>
     </div>
   );
