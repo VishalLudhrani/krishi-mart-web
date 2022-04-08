@@ -4,8 +4,8 @@ import { useHistory } from "react-router-dom";
 
 import useUser from "../../hooks/useUser";
 import LandingPage from "../LandingPage";
-import ConsumerHomePage from "./ConsumerHomePage";
-import FarmerHomePage from "./FarmerHomePage";
+import ConsumerHomePage from "./Consumer/ConsumerHomePage";
+import FarmerHomePage from "./Farmer/FarmerHomePage";
 
 const Home = () => {
   let content = (
