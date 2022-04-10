@@ -1,4 +1,8 @@
 import React, { useState } from "react";
+import firebase from "firebase/app";
+import "firebase/database";
+import { ObjectifyCamelCase } from "../../../utils/ObjectifyCamelCase";
+import ProductItem from "../../Products/ProductItem";
 
 const ConsumerHomePage = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -12,13 +16,29 @@ const ConsumerHomePage = () => {
 
   const searchProducts = () => {
     setLoading(true);
-    console.log(searchQuery, "\nSearching");
+    firebase
+      .database()
+      .ref("products/")
+      .orderByChild("crop_name")
+      .equalTo(searchQuery)
+      .on("value", (productSnapshot) => {
+        let fetchedProducts = productSnapshot.val();
+        let productDB = [];
+        for (const key in fetchedProducts) {
+          const productObjectified = ObjectifyCamelCase(fetchedProducts[key]);
+          productDB.push({
+            id: key,
+            ...productObjectified,
+          });
+        }
+        setProducts(productDB);
+      });
     setLoading(false);
   };
 
   const queryBlurHandler = () => {
     setIsTouched(true);
-  }
+  };
 
   let emptyStateContent = (
     <div className="row">
@@ -76,10 +96,12 @@ const ConsumerHomePage = () => {
             </div>
           </div>
         ) : (
-          <p>Products appear here</p>
+          products.map((product) => (
+            <ProductItem key={product.id} {...product} userCategory="consumer" />
+          ))
         )}
       </div>
-      {isTouched && emptyStateContent}
+      {isTouched && emptyStateContent && !products.length > 0}
     </div>
   );
 };

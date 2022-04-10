@@ -11,6 +11,7 @@ const useUser = () => {
       if (fetchedUser) {
         setUser(fetchedUser);
       } else {
+        setUser(null);
         setError("User doesn't exist yet");
       }
     });

@@ -36,6 +36,8 @@ const Home = () => {
             setUserCategory(userSnapshot.val()["user_category"]);
           }
         });
+    } else {
+      setUserIsLoggedIn(false);
     }
   }, [fetchedUser, history]);
 
@@ -44,11 +46,6 @@ const Home = () => {
     firebase
       .auth()
       .signInWithPopup(provider)
-      .then(() => {
-        // The signed-in user info.
-        console.log("User logged in!");
-        // ...
-      })
       .catch((error) => {
         // Handle Errors here.
         var errorCode = error.code;

@@ -4,6 +4,7 @@ import "firebase/database";
 
 import useUser from "../../../hooks/useUser";
 import FarmerCrops from "./FarmerCrops";
+import { ObjectifyCamelCase } from "../../../utils/ObjectifyCamelCase";
 
 const FarmerHomePage = () => {
   const [products, setProducts] = useState([]);
@@ -25,13 +26,10 @@ const FarmerHomePage = () => {
             let fetchedProducts = [];
             for (const key in productDB) {
               const item = productDB[key];
+              const productObjectified = ObjectifyCamelCase(item);
               fetchedProducts.push({
                 id: key,
-                farmerName: item.farmer_name,
-                farmerEmail: item.farmer_email,
-                cropName: item.crop_name,
-                quantity: item.quantity,
-                price: item.price,
+                ...productObjectified,
               });
             }
             setProducts(fetchedProducts);
@@ -67,14 +65,16 @@ const FarmerHomePage = () => {
         Add Crop
       </button>
       <br />
-      <FarmerCrops
-        products={products}
-        isAddingCrops={isAddingCrops}
-        cropAdded={cropAdded}
-        onCloseModal={closeModalHandler}
-        onCloseCropsModal={closeCropModalHandler}
-        onCropAdded={cropAddedSuccessHandler}
-      />
+      <section id="info">
+        <FarmerCrops
+          products={products}
+          isAddingCrops={isAddingCrops}
+          cropAdded={cropAdded}
+          onCloseModal={closeModalHandler}
+          onCloseCropsModal={closeCropModalHandler}
+          onCropAdded={cropAddedSuccessHandler}
+        />
+      </section>
     </div>
   );
 };
