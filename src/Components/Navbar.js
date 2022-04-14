@@ -60,17 +60,15 @@ const Navbar = () => {
                     data-bs-toggle="dropdown"
                     aria-expanded="false"
                   >
-                    <img
-                      src={
-                        user
-                          ? user.photoURL
-                          : "https://cdn4.iconfinder.com/data/icons/music-ui-solid-24px/24/user_account_profile-2-128.png"
-                      }
+                    {user ? <img
+                      src={user.photoURL}
                       width="32"
                       height="32"
                       style={{ borderRadius: "50%" }}
                       alt="User Profile"
-                    />
+                    /> : (
+                      <i className="fa fa-user"></i>
+                    )}
                     <span> {user ? user.displayName : "User"}</span>
                   </span>
                   <ul

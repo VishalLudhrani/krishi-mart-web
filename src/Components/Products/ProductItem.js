@@ -1,9 +1,16 @@
 import React from "react";
+import { useHistory } from "react-router-dom";
 
 const ProductItem = (props) => {
+  const history = useHistory();
+
+  const cardClickHandler = () => {
+    history.push("product/" + props.id);
+  }
+
   return (
-    <div className="col-sm-3">
-      <div className="card my-1">
+    <div className="col-sm-3 cursor-pointer">
+      <div className="card my-1" onClick={cardClickHandler}>
         <div className="card-body gap-4">
           <h3 className="card-title fw-bold">{props.cropName}</h3>
           {props.userCategory === "consumer" && (
