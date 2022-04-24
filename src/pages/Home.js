@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import firebase from "firebase";
 import { useHistory } from "react-router-dom";
 
-import useUser from "../../hooks/useUser";
-import LandingPage from "../LandingPage";
-import ConsumerHomePage from "./Consumer/ConsumerHomePage";
-import FarmerHomePage from "./Farmer/FarmerHomePage";
+import useUser from "../hooks/useUser";
+import LandingPage from "./LandingPage";
+import ConsumerHomePage from "../components/Home/Consumer/ConsumerHomePage";
+import FarmerHomePage from "../components/Home/Farmer/FarmerHomePage";
 
 const Home = () => {
   let content = (
@@ -31,9 +31,9 @@ const Home = () => {
         .ref(`users/${fetchedUser.uid}`)
         .on("value", (userSnapshot) => {
           if (!userSnapshot.hasChildren()) {
-            history.push("/update-profile");
+            history.push("/profile/edit");
           } else {
-            setUserCategory(userSnapshot.val()["user_category"]);
+            setUserCategory(userSnapshot.val()["category"]);
           }
         });
     } else {

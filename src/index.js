@@ -1,7 +1,9 @@
-import ReactDOM from 'react-dom';
-import './index.css';
-import firebase from 'firebase/app';
-import App from './App';
+import ReactDOM from "react-dom";
+import "./index.css";
+import firebase from "firebase/app";
+import App from "./App";
+import store from "./store/index";
+import { Provider } from "react-redux";
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -16,5 +18,10 @@ const firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 
-let root = document.getElementById('root');
-ReactDOM.render(<App />, root);
+let root = document.getElementById("root");
+ReactDOM.render(
+  <Provider store={store}>
+    <App />
+  </Provider>,
+  root
+);
