@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import Navbar from './components/Navbar';
 import ProductDetails from './components/Products/ProductDetails';
 import UpdateProfile from './pages/UpdateProfile';
+import UserProfile from './pages/UserProfile';
 
 const App = () => {
   return(
@@ -24,6 +25,9 @@ const App = () => {
           </Route>
           <Route path="/profile/edit">
             <UpdateProfile />
+          </Route>
+          <Route path="/profile/me">
+            <UserProfile />
           </Route>
         </Switch>
       </BrowserRouter>

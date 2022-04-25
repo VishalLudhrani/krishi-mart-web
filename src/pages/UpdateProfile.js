@@ -65,15 +65,13 @@ const UpdateProfile = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (user.category) {
-      formik.setValues({
-        name: user.name ? user.name : "",
-        email: user.email ? user.email : "",
-        category: user.category ? user.category : "",
-        address: user.address ? user.address : "",
-        phone: user.phone ? user.phone : "",
-      });
-    }
+    formik.setValues({
+      name: user.name ? user.name : "",
+      email: user.email ? user.email : "",
+      category: user.category ? user.category : "",
+      address: user.address ? user.address : "",
+      phone: user.phone ? user.phone : "",
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 

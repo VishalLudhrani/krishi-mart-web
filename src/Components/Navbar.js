@@ -78,7 +78,7 @@ const Navbar = () => {
                     <li>
                       <span className="dropdown-item cursor-pointer">
                         <Link
-                          to="/user-profile"
+                          to="/profile/me"
                           style={{ textDecoration: "none", color: "#1F2421" }}
                         >
                           My Profile

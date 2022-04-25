@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 const UpdateProfileForm = ({
   setFormTouched,
   formik,
@@ -5,6 +7,7 @@ const UpdateProfileForm = ({
   isSubmitting,
   setIsSubmitting
 }) => {
+  const [submitTouched, setSubmitTouched] = useState(false);
   return (
     <form
         onFocus={() => {
@@ -83,6 +86,7 @@ const UpdateProfileForm = ({
                 value="farmer"
                 checked={formik.values.category === "farmer"}
                 onChange={formik.handleChange}
+                required
               />
               <label className="form-check-label" htmlFor="radio-farmer">
                 Farmer
@@ -101,8 +105,8 @@ const UpdateProfileForm = ({
               <label className="form-check-label" htmlFor="radio-consumer">
                 Consumer
               </label>
+              <div className="invalid-feedback">{formik.errors.category}</div>
             </div>
-            <div className="invalid-feedback">{formik.errors.category}</div>
           </div>
         </fieldset>
         <div className="row mb-3">
@@ -125,18 +129,21 @@ const UpdateProfileForm = ({
         <button
           onClick={() => {
             setIsSubmitting(true);
+            if (formik.isValid) {
+              setSubmitTouched(true);
+            }
           }}
           type="submit"
           className="btn btn-success"
         >
-          {isSubmitting && (
+          {submitTouched && isSubmitting && (
             <span
               className="spinner-border spinner-border-sm"
               role="status"
               aria-hidden="true"
             ></span>
           )}
-          {isSubmitting ? "Saving" : "Save Changes"}
+          {submitTouched && isSubmitting ? " Saving" : "Save Changes"}
         </button>
       </form>
   )

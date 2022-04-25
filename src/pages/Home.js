@@ -30,7 +30,7 @@ const Home = () => {
         .database()
         .ref(`users/${fetchedUser.uid}`)
         .on("value", (userSnapshot) => {
-          if (!userSnapshot.hasChildren()) {
+          if (!userSnapshot.hasChild("category")) {
             history.push("/profile/edit");
           } else {
             setUserCategory(userSnapshot.val()["category"]);
@@ -46,6 +46,16 @@ const Home = () => {
     firebase
       .auth()
       .signInWithPopup(provider)
+      .then((result) => {
+        const user = result.user;
+        firebase
+          .database()
+          .ref(`users/${user.uid}`)
+          .set({
+            name: user.displayName,
+            email: user.email,
+          })
+      })
       .catch((error) => {
         // Handle Errors here.
         var errorCode = error.code;
