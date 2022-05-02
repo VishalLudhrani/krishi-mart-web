@@ -11,7 +11,7 @@ const FarmerHomePage = () => {
   const [isAddingCrops, setIsAddingCrops] = useState(false);
   const [cropAdded, setCropAdded] = useState(false);
 
-  const { user: farmer } = useUser();
+  const { data: farmer } = useUser();
 
   useEffect(() => {
     if (farmer) {

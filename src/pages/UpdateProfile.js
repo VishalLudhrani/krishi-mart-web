@@ -1,7 +1,6 @@
 import withAuth from "../guards/with-auth";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { getUser } from "../store/user-slice";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import firebase from "firebase/app";
@@ -14,8 +13,7 @@ const UpdateProfile = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState({ status: "", message: "" });
   const [modalOpen, setModalOpen] = useState(false);
-  const user = useSelector((state) => state.user);
-  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user.data);
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -59,10 +57,6 @@ const UpdateProfile = () => {
         });
     },
   });
-
-  useEffect(() => {
-    dispatch(getUser());
-  }, [dispatch]);
 
   useEffect(() => {
     formik.setValues({

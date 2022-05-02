@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect } from "react";
 import firebase from "firebase";
 import { useHistory } from "react-router-dom";
 
@@ -6,6 +6,8 @@ import useUser from "../hooks/useUser";
 import LandingPage from "./LandingPage";
 import ConsumerHomePage from "../components/Home/Consumer/ConsumerHomePage";
 import FarmerHomePage from "../components/Home/Farmer/FarmerHomePage";
+import { useDispatch } from "react-redux";
+import { getUser } from "../store/user-slice";
 
 const Home = () => {
   let content = (
@@ -17,29 +19,22 @@ const Home = () => {
     </div>
   );
 
-  const [userIsLoggedIn, setUserIsLoggedIn] = useState(false);
-  const [userCategory, setUserCategory] = useState("");
-
-  const { user: fetchedUser } = useUser();
+  const { data: fetchedUser, isLoggedIn } = useUser();
   const history = useHistory();
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    if (fetchedUser) {
-      setUserIsLoggedIn(true);
+    if (isLoggedIn) {
       firebase
         .database()
         .ref(`users/${fetchedUser.uid}`)
         .on("value", (userSnapshot) => {
           if (!userSnapshot.hasChild("category")) {
             history.push("/profile/edit");
-          } else {
-            setUserCategory(userSnapshot.val()["category"]);
           }
         });
-    } else {
-      setUserIsLoggedIn(false);
     }
-  }, [fetchedUser, history]);
+  }, [fetchedUser, history, isLoggedIn]);
 
   const signupHandler = () => {
     let provider = new firebase.auth.GoogleAuthProvider();
@@ -51,10 +46,11 @@ const Home = () => {
         firebase
           .database()
           .ref(`users/${user.uid}`)
-          .set({
+          .update({
             name: user.displayName,
             email: user.email,
-          })
+          });
+        dispatch(getUser(user.uid, user.photoURL));
       })
       .catch((error) => {
         // Handle Errors here.
@@ -65,11 +61,11 @@ const Home = () => {
       });
   };
 
-  if (userIsLoggedIn) {
-    if (fetchedUser && userCategory === "consumer") {
+  if (isLoggedIn) {
+    if (fetchedUser.category === "consumer") {
       content = <ConsumerHomePage />;
     } 
-    if (fetchedUser && userCategory === "farmer") {
+    if (fetchedUser.category === "farmer") {
       content = <FarmerHomePage />;
     }
   } else {

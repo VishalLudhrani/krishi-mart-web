@@ -1,36 +1,30 @@
 import React from "react";
-import firebase from "firebase/app";
-import "firebase/auth";
 import { withRouter } from "react-router-dom";
+import { connect } from "react-redux";
+
+const mapStateToProps = (state) => {
+  return {
+    isLoggedIn: state.user.isLoggedIn,
+  };
+};
 
 const withAuth = (WrappedComponent) => {
-  return withRouter(
-    class extends React.Component {
-      constructor(props) {
-        super(props);
-        this.state = {
-          isLoggedIn: false,
-        };
-        this.history = props.history;
-      }
-      componentDidMount() {
-        firebase.auth().onAuthStateChanged((fetchedUser) => {
-          if (fetchedUser) {
-            this.setState({
-              isLoggedIn: true,
-            });
-          } else {
-            this.setState({
-              isLoggedIn: false,
-            });
-            this.history.push("/");
+  return connect(
+    mapStateToProps,
+    null
+  )(
+    withRouter(
+      class extends React.Component {
+        componentDidUpdate() {
+          if (!this.props.isLoggedIn) {
+            this.props.history.push("/");
           }
-        });
+        }
+        render() {
+          return <WrappedComponent {...this.props} />;
+        }
       }
-      render() {
-        return <WrappedComponent {...this.props} />;
-      }
-    }
+    )
   );
 };
 

@@ -1,14 +1,20 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import firebase from "firebase/app";
 import "firebase/auth";
-import useUser from "../hooks/useUser";
+import { useDispatch, useSelector } from "react-redux";
+import { cartActions } from "../store/cart-slice";
+import { userActions } from "../store/user-slice";
 
 const Navbar = () => {
-  const { user } = useUser();
-
+  const totalCartItems = useSelector(state => state.cart.data.totalItems);
+  const isLoggedIn = useSelector(state => state.user.isLoggedIn);
+  const userData = useSelector(state => state.user.data);
+  const dispatch = useDispatch();
+  
   const userLogout = () => {
     firebase.auth().signOut();
+    dispatch(userActions.resetUser());
+    dispatch(cartActions.resetCart());
   };
 
   return (
@@ -50,7 +56,7 @@ const Navbar = () => {
               </li>
               <li className="nav-item">
                 <div
-                  className={user ? "display-block dropdown" : "display-none"}
+                  className={isLoggedIn ? "display-block dropdown" : "display-none"}
                 >
                   <span
                     className="nav-link dropdown-toggle cursor-pointer"
@@ -60,16 +66,18 @@ const Navbar = () => {
                     data-bs-toggle="dropdown"
                     aria-expanded="false"
                   >
-                    {user ? <img
-                      src={user.photoURL}
-                      width="32"
-                      height="32"
-                      style={{ borderRadius: "50%" }}
-                      alt="User Profile"
-                    /> : (
+                    {userData.photoURL.length > 0 ? (
+                      <img
+                        src={userData.photoURL}
+                        width="32"
+                        height="32"
+                        style={{ borderRadius: "50%" }}
+                        alt="User Profile"
+                      />
+                    ) : (
                       <i className="fa fa-user"></i>
                     )}
-                    <span> {user ? user.displayName : "User"}</span>
+                    <span> {userData.name.length ? userData.name : "User"}</span>
                   </span>
                   <ul
                     className="dropdown-menu"
@@ -98,21 +106,29 @@ const Navbar = () => {
               </li>
             </ul>
           </div>
-          <span
-            style={{
-              fontSize: "1.5rem",
-              color: "#49A078",
-              margin: "auto 20px",
-            }}
-            title="My Cart"
-          >
-            <Link
-              style={{ color: "#49A078", textDecoration: "none" }}
-              to="/cart"
+          {isLoggedIn && (
+            <span
+              style={{
+                fontSize: "1.5rem",
+                color: "#49A078",
+                margin: "auto 20px",
+              }}
+              title="My Cart"
+              className="position-relative"
             >
-              <i className="fas fa-shopping-cart cursor-pointer"></i>
-            </Link>
-          </span>
+              <Link
+                style={{ color: "#49A078", textDecoration: "none" }}
+                to="/cart"
+              >
+                {totalCartItems > 0 && (
+                  <span style={{ color: 'white', fontSize: '0.75rem' }} className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    <span>{totalCartItems}</span>
+                  </span>
+                )}
+                <i className="fas fa-shopping-cart cursor-pointer"></i>
+              </Link>
+            </span>
+          )}
         </div>
       </div>
     </nav>

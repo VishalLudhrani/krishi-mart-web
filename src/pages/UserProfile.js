@@ -1,19 +1,10 @@
-import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { getUser } from "../store/user-slice";
+import { useSelector } from "react-redux";
 import withAuth from "../guards/with-auth";
 import { useHistory } from "react-router-dom";
 
 const UserProfile = () => {
-  const user = useSelector((state) => state.user);
-  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user.data);
   const history = useHistory();
-
-  useEffect(() => {
-    if (user.name.length === 0) {
-      dispatch(getUser());
-    }
-  }, [dispatch, user.name]);
 
   const editProfileClickHandler = () => {
     history.push("/profile/edit");

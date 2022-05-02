@@ -4,74 +4,77 @@ import "firebase/auth";
 import "firebase/database";
 
 const initialUserState = {
-  name: "",
-  photoURL: "",
-  email: "",
-  uid: "",
-  address: "",
-  category: "",
-  phone: "",
+  data: {
+    uid: "",
+    name: "",
+    email: "",
+    photoURL: "",
+    address: "",
+    category: "",
+    phone: "",
+  },
   error: "",
+  isLoggedIn: false,
+  cartExists: false,
 };
 
 const user = createSlice({
   name: "user",
   initialState: initialUserState,
   reducers: {
-    setUserAuth(state, action) {
-      state.uid = action.payload.uid;
-      state.email = action.payload.email;
-      state.name = action.payload.name;
-      state.photoURL = action.payload.photoURL;
-    },
     setUserData(state, action) {
-      state.category = action.payload.category;
-      state.phone = action.payload.phone;
-      state.address = action.payload.address;
+      state.data = action.payload.userData;
+      state.isLoggedIn = action.payload.isLoggedIn;
     },
     setError(state, action) {
       state.error = action.payload.error;
+    },
+    resetUser(state) {
+      state.data = initialUserState.data;
+      state.error = initialUserState.error;
+      state.isLoggedIn = initialUserState.isLoggedIn;
+      state.cartExists = initialUserState.cartExists;
+    },
+    toggleCartState(state, action) {
+      state.cartExists = action.payload.cartExists;
     }
-  }
+  },
 });
 
 export const userActions = user.actions;
 
-export const getUser = () => {
+export const getUser = (uid, photoURL) => {
   return (dispatch) => {
-    const getUserData = (uid) => {
-      firebase
-        .database()
-        .ref("users/" + uid)
-        .on("value", (userSnapshot) => {
-          if (userSnapshot.exists()) {
-            dispatch(userActions.setUserData({
-              category: userSnapshot.val()["category"],
-              address: userSnapshot.val()["address"],
-              phone: userSnapshot.val()["phone"],
-            }))
-          } else {
-            throw new Error("Data not found.");
-          }
-        });
-    };
-    const getUserAuth = () => {
-      firebase.auth().onAuthStateChanged((fetchedUser) => {
-        if (fetchedUser) {
-          dispatch(userActions.setUserAuth({
-            uid: fetchedUser.uid,
-            name: fetchedUser.displayName,
-            email: fetchedUser.email,
-            photoURL: fetchedUser.photoURL,
-          }));
-          getUserData(fetchedUser.uid)
-        } else {
-          throw new Error("Error logging in.");
+    const getUserData = (uid, photoURL) => {
+      const userRef = firebase.database().ref("users/");
+      userRef.child(uid).on("value", (userSnapshot) => {
+        if (userSnapshot.exists()) {
+          dispatch(
+            userActions.setUserData({
+              userData: {
+                category: userSnapshot.val()["category"],
+                address: userSnapshot.val()["address"],
+                phone: userSnapshot.val()["phone"],
+                name: userSnapshot.val()["name"],
+                uid,
+                photoURL,
+                email: userSnapshot.val()["email"],
+              },
+              isLoggedIn: true,
+            })
+          );
         }
       });
+      userRef.child(`${uid}/cart/items`).on("value", (cartSnapshot) => {
+        if (cartSnapshot.exists()) {
+          dispatch(userActions.toggleCartState({ cartExists: true }));
+        } else {
+          dispatch(userActions.toggleCartState({ cartExists: false }));
+        }
+      })
     };
     try {
-      getUserAuth();
+      getUserData(uid, photoURL);
     } catch (error) {
       dispatch(userActions.setError({ error }));
     }
