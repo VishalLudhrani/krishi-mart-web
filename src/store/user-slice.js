@@ -37,7 +37,7 @@ const user = createSlice({
     },
     toggleCartState(state, action) {
       state.cartExists = action.payload.cartExists;
-    }
+    },
   },
 });
 
@@ -64,14 +64,16 @@ export const getUser = (uid, photoURL) => {
             })
           );
         }
-      });
-      userRef.child(`${uid}/cart/items`).on("value", (cartSnapshot) => {
-        if (cartSnapshot.exists()) {
-          dispatch(userActions.toggleCartState({ cartExists: true }));
-        } else {
-          dispatch(userActions.toggleCartState({ cartExists: false }));
+        if (userSnapshot.val()["category"] === "consumer") {
+          userRef.child(`${uid}/cart/items`).on("value", (cartSnapshot) => {
+            if (cartSnapshot.exists()) {
+              dispatch(userActions.toggleCartState({ cartExists: true }));
+            } else {
+              dispatch(userActions.toggleCartState({ cartExists: false }));
+            }
+          });
         }
-      })
+      });
     };
     try {
       getUserData(uid, photoURL);

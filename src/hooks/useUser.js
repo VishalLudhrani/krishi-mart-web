@@ -10,7 +10,7 @@ const useUser = () => {
 
   useEffect(() => {
     firebase.auth().onAuthStateChanged((fetchedUser) => {
-      if (fetchedUser) {
+      if (fetchedUser && !isLoggedIn) {
         dispatch(getUser(fetchedUser.uid, fetchedUser.photoURL));
       }
     });
