@@ -1,39 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import firebase from "firebase/app";
 import "firebase/database";
 import { ObjectifyCamelCase } from "../../../utils/ObjectifyCamelCase";
-import { useDispatch, useSelector } from "react-redux";
 import ProductItem from "../../Products/ProductItem";
-import useUser from "../../../hooks/useUser";
-import { sendCartData, fetchCartData } from "../../../store/cart-slice";
-import { userActions } from "../../../store/user-slice";
 
 const ConsumerHomePage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [isTouched, setIsTouched] = useState(false);
   const [products, setProducts] = useState([]);
-
-  const dispatch = useDispatch();
-  const cart = useSelector((state) => state.cart.data);
-  const storedCartIsEmpty = cart.items.length === 0;
-  const { data: user, isLoggedIn, cartExists } = useUser();
-  const uid = user.uid;
-
-  useEffect(() => {
-    if (isLoggedIn && cartExists && !storedCartIsEmpty) {
-      dispatch(sendCartData(uid, cart));
-    }
-    if (!storedCartIsEmpty && !cartExists) {
-      dispatch(userActions.toggleCartState({ cartExists: true }));
-    }
-  }, [cart, dispatch, uid, isLoggedIn, cartExists, storedCartIsEmpty]);
-
-  useEffect(() => {
-    if (isLoggedIn && cartExists) {
-      dispatch(fetchCartData(uid));
-    }
-  }, [uid, dispatch, isLoggedIn, cartExists]);
 
   const searchQueryHandler = (event) => {
     setSearchQuery(event.target.value);

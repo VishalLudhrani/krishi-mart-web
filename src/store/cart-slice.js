@@ -8,7 +8,8 @@ const initialCartState = {
     totalAmount: 0,
     items: [],
   },
-  error: null
+  error: null,
+  changed: false,
 }
 
 const cartSlice = createSlice({
@@ -20,21 +21,27 @@ const cartSlice = createSlice({
         ...action.payload.product,
         id: action.payload.id
       });
-      state.data.totalAmount += action.payload.product.price;
+      state.data.totalAmount += action.payload.product.price * action.payload.product.quantity;
       state.data.totalItems++;
+      state.changed = true;
     },
     removeFromCart(state, action) {
       const targetItem = state.data.items.find(item => item.id === action.payload.id);
       state.data.items = state.data.items.filter(item => item.id !== action.payload.id);
-      state.data.totalAmount -= targetItem.price;
+      state.data.totalAmount -= targetItem.price * targetItem.quantity;
       state.data.totalItems--;
+      state.changed = true;
     },
     resetCart(state) {
       state.data = initialCartState.data;
       state.error = initialCartState.error;
+      state.changed = initialCartState.changed;
     },
     replaceCart(state, action) {
       state.data = action.payload.cart
+    },
+    resetCartChanged(state) {
+      state.changed = false;
     }
   }
 });
@@ -47,6 +54,9 @@ export const sendCartData = (uid, cart) => (dispatch) => {
       .database()
       .ref("users/" + uid + "/cart")
       .set(cart)
+      .then(() => {
+        dispatch(cartActions.resetCartChanged());
+      });
   }
   try {
     sendData();
