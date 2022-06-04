@@ -5,8 +5,8 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import firebase from "firebase/app";
 import "firebase/database";
-import Modal from "../components/UI/Modal/Modal";
-import UpdateProfileForm from "../components/forms/UpdateProfileForm";
+import Modal from "components/UI/Modal/Modal";
+import UpdateProfileForm from "components/forms/UpdateProfileForm";
 
 const UpdateProfile = () => {
   const [formTouched, setFormTouched] = useState(false);

@@ -4,8 +4,8 @@ import { useHistory } from "react-router-dom";
 
 import useUser from "../hooks/useUser";
 import LandingPage from "./LandingPage";
-import ConsumerHomePage from "../components/Home/Consumer/ConsumerHomePage";
-import FarmerHomePage from "../components/Home/Farmer/FarmerHomePage";
+import ConsumerHomePage from "../components/elements/Home/Consumer/ConsumerHomePage";
+import FarmerHomePage from "../components/elements/Home/Farmer/FarmerHomePage";
 import { useDispatch } from "react-redux";
 import { getUser } from "../store/user-slice";
 

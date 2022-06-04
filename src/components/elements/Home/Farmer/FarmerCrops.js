@@ -1,7 +1,7 @@
 import React from "react";
 
-import ProductItem from "../../Products/ProductItem";
-import Modal from "../../UI/Modal/Modal";
+import ProductItem from "components/elements/Products/ProductItem";
+import Modal from "components/UI/Modal/Modal";
 import AddCropForm from "./AddCropForm/AddCropForm";
 
 const FarmerCrops = (props) => {

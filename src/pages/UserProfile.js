@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import withAuth from "../guards/with-auth";
+import withAuth from "guards/with-auth";
 import { useHistory } from "react-router-dom";
 
 const UserProfile = () => {

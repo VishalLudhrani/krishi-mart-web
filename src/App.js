@@ -1,16 +1,17 @@
 import { Switch } from 'react-router-dom';
 import { BrowserRouter, Route } from 'react-router-dom';
 import './App.css';
-import Home from './pages/Home';
-import Navbar from './components/Navbar';
-import ProductDetails from './pages/ProductDetails';
-import UpdateProfile from './pages/UpdateProfile';
-import UserProfile from './pages/UserProfile';
-import Cart from './pages/Cart';
-import useUser from './hooks/useUser';
+import Home from 'pages/Home';
+import Navbar from 'components/elements/Navbar/Navbar';
+import ProductDetails from 'pages/ProductDetails';
+import UpdateProfile from 'pages/UpdateProfile';
+import UserProfile from 'pages/UserProfile';
+import Cart from 'pages/Cart';
+import useUser from 'hooks/useUser';
 import { useSelector, useDispatch } from 'react-redux';
 import { useEffect } from 'react';
-import { sendCartData, fetchCartData } from './store/cart-slice';
+import { sendCartData, fetchCartData } from 'store/cart-slice';
+import Checkout from 'pages/Checkout';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -53,6 +54,9 @@ const App = () => {
           </Route>
           <Route path="/cart">
             <Cart />
+          </Route>
+          <Route path="/checkout">
+            <Checkout />
           </Route>
         </Switch>
       </BrowserRouter>

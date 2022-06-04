@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import firebase from "firebase";
 import { nanoid } from "nanoid";
 
-import useInput from "../../../../hooks/use-input";
+import useInput from "hooks/use-input";
 import styles from "./AddCropForm.module.css";
 
 const AddCropForm = (props) => {

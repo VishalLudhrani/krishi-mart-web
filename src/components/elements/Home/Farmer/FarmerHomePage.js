@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import firebase from "firebase/app";
 import "firebase/database";
 
-import useUser from "../../../hooks/useUser";
+import useUser from "hooks/useUser";
 import FarmerCrops from "./FarmerCrops";
-import { ObjectifyCamelCase } from "../../../utils/ObjectifyCamelCase";
+import { ObjectifyCamelCase } from "utils/ObjectifyCamelCase";
 
 const FarmerHomePage = () => {
   const [products, setProducts] = useState([]);

@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import firebase from "firebase/app";
 import "firebase/database";
-import { ObjectifyCamelCase } from "../utils/ObjectifyCamelCase";
-import useUser from "../hooks/useUser";
-import withAuth from "../guards/with-auth";
+import { ObjectifyCamelCase } from "utils/ObjectifyCamelCase";
+import useUser from "hooks/useUser";
+import withAuth from "guards/with-auth";
 import { useDispatch, useSelector } from "react-redux";
-import { cartActions } from "../store/cart-slice";
+import { cartActions } from "store/cart-slice";
 
 const ProductDetails = (props) => {
   const { id } = useParams();

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import firebase from "firebase/app";
 import "firebase/database";
-import { ObjectifyCamelCase } from "../../../utils/ObjectifyCamelCase";
-import ProductItem from "../../Products/ProductItem";
+import { ObjectifyCamelCase } from "utils/ObjectifyCamelCase";
+import ProductItem from "components/elements/Products/ProductItem";
 
 const ConsumerHomePage = () => {
   const [searchQuery, setSearchQuery] = useState("");

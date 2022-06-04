@@ -2,8 +2,8 @@ import { Link } from "react-router-dom";
 import firebase from "firebase/app";
 import "firebase/auth";
 import { useDispatch, useSelector } from "react-redux";
-import { cartActions } from "../store/cart-slice";
-import { userActions } from "../store/user-slice";
+import { cartActions } from "../../../store/cart-slice";
+import { userActions } from "../../../store/user-slice";
 
 const Navbar = () => {
   const totalCartItems = useSelector(state => state.cart.data.totalItems);
