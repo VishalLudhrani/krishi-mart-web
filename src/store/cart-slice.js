@@ -42,6 +42,10 @@ const cartSlice = createSlice({
     },
     resetCartChanged(state) {
       state.changed = false;
+    },
+    emptyCart(state) {
+      state.data = initialCartState.data;
+      state.changed = true;
     }
   }
 });

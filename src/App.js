@@ -12,12 +12,15 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useEffect } from 'react';
 import { sendCartData, fetchCartData } from 'store/cart-slice';
 import Checkout from 'pages/Checkout';
+import { fetchHistory, sendHistory } from 'store/history-slice';
 
 const App = () => {
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart);
   const { changed: cartChanged, data: cartData } = cart;
-  const { data: fetchedUser, cartExists } = useUser();
+  const history = useSelector((state) => state.history);
+  const { changed: historyChanged, data: historyData } = history;
+  const { data: fetchedUser, cartExists, historyExists } = useUser();
   const uid = fetchedUser.uid;
 
   useEffect(() => {
@@ -31,6 +34,18 @@ const App = () => {
       dispatch(sendCartData(uid, cartData));
     } 
   }, [uid, cartChanged, cartData, dispatch]);
+
+  useEffect(() => {
+    if (historyExists) {
+      dispatch(fetchHistory(uid));
+    }
+  }, [uid, historyExists, dispatch]);
+
+  useEffect(() => {
+    if (historyChanged) {
+      dispatch(sendHistory(uid, historyData));
+    }
+  }, [dispatch, historyChanged, historyData, uid]);
 
   return(
     <div className="container">

@@ -16,6 +16,7 @@ const initialUserState = {
   error: "",
   isLoggedIn: false,
   cartExists: false,
+  historyExists: false,
 };
 
 const user = createSlice({
@@ -34,9 +35,13 @@ const user = createSlice({
       state.error = initialUserState.error;
       state.isLoggedIn = initialUserState.isLoggedIn;
       state.cartExists = initialUserState.cartExists;
+      state.historyExists = initialUserState.historyExists;
     },
     toggleCartState(state, action) {
       state.cartExists = action.payload.cartExists;
+    },
+    toggleHistoryState(state, action) {
+      state.historyExists = action.payload.historyExists;
     },
   },
 });
@@ -72,6 +77,13 @@ export const getUser = (uid, photoURL) => {
               dispatch(userActions.toggleCartState({ cartExists: false }));
             }
           });
+          userRef.child(`${uid}/history/items`).on("value", (historySnapshot) => {
+            if (historySnapshot.exists()) {
+              dispatch(userActions.toggleHistoryState({ historyExists: true }));
+            } else {
+              dispatch(userActions.toggleHistoryState({ historyExists: false }));
+            }
+          })
         }
       });
     };
